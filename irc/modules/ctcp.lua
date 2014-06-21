@@ -1,10 +1,12 @@
+local utils = require("irc.utils")
+
 return function(irc)
 	irc:add_hook("ctcp", "on_notice_ctcp_version", function(irc, state, channel, message)
 		local versions = irc.linda:get("ctcp.versions")
 		if not versions then
 			return
 		end
-		local version = message:match("^(.+) ")
+		local version = utils.split(message, " ")[1]
 		if not version then
 			return
 		end
@@ -33,7 +35,7 @@ return function(irc)
 		for version, count in pairs(version_count) do
 			table.insert(sorted_count, {version, count})
 		end
-		table.sort(sorted_count, function(a, b) return a[2] < b[2] end)
+		table.sort(sorted_count, function(a, b) return a[2] > b[2] end)
 		
 		local out = {}
 		for i, version_count in ipairs(sorted_count) do
