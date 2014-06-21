@@ -115,6 +115,7 @@ return function(irc)
         return mu + z * sigma
 	end
 	irc:add_command("misc", "coin", function(irc, state, channel, coins)
+		coins = coins or 1
 		if coins < 0 then
 			return irc:action(("throws %s coin%s to the floor"):format(math.abs(coins), coins == -1 and "" or "s"))
 		elseif coins == 0 then
@@ -133,7 +134,7 @@ return function(irc)
 			tails = coins - heads
 			return irc:action(("flips %s coins and gets %s head%s and %s tail%s."):format(coins, heads, heads == 1 and "" or "s", tails, tails == 1 and "" or "s"))
 		end
-	end, false, "int")
+	end, false, "int...")
 
 	local flip_table = {
 		["!"] = "¡", ['"'] = ",,", ["&"] = "⅋", ["'"] = ",", ["("] = ")",
