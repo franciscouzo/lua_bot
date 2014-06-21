@@ -113,4 +113,23 @@ return function(irc)
 
 		return ret
 	end, false, "+int", "+int")
+	irc:add_command("tictactoe", "ttt_stop", function(irc, state, channel, msg)
+		channel = irc:lower(channel)
+		nick = irc:lower(state.nick)
+
+		assert(irc.channels[channel], "Invalid channel")
+
+		local games = irc.linda:get("tictactoe.games")
+		assert(games, "No games taking place")
+
+		for i, game in ipairs(games) do
+			if game.players[1] == nick or game.players[2] == nick then
+				table.remove(games, i)
+				irc.linda:set("tictactoe.games", games)
+				local other = game.players[game.players[1] == nick and 2 or 1]
+				return other .. " wins by default"
+			end
+		end
+		error("You're not playing")
+	end, false)
 end
