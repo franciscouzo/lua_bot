@@ -1,0 +1,47 @@
+local html = require("irc.html")
+local default_handler = function(url, s)
+	local title = s:match("<[Tt][Ii][Tt][Ll][Ee]>([^<]*)<")
+	return title and "Title: " .. html.unescape(title)
+end
+
+local handlers = {
+	-- TODO, add more handlers
+	["twitter.com"] = function(url, s)
+		--if url:match()
+	end
+}
+
+local limited_sink = function(t, max)
+	local l = 0
+	return function(s)
+		l = l + #s
+		table.insert(t, s)
+		if l >= max then
+			error("Max reached")
+		end
+	end
+end
+
+return function(irc)
+	irc:add_hook("url_info", "on_non_cmd_privmsg", function(irc, state, channel, msg)
+		local http = require("socket.http")
+		http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
+
+		local socket_url = require("socket.url")
+		for url in msg:gmatch("https?://%S+") do
+			local parsed = socket_url.parse(url)
+			if parsed then -- idk if it can return nil
+				local t = {}
+				local success, _, response_code = pcall(http.request, {
+					url = url,
+					sink = limited_sink(t, 1024 * 1024) -- 1MiB should be enough
+				})
+				local handler = handlers[parsed.host] or default_handler
+				local url_info = handler(url, table.concat(t))
+				if url_info then
+					irc:privmsg(channel, url_info)
+				end
+			end
+		end
+	end)
+end
