@@ -15,19 +15,8 @@ local operator_funcs = {
 }
 
 local math_func_arguments = {
-	abs  = "float",
-	ceil = "float", floor = "float",
-	acos = "float", asin  = "float",
-	atan = "float", atan2 = {"float", "float"},
-	cos  = "float", sin   = "float", tan = "float",
-	cosh = "float", sinh  = "float", tanh = "float",
-	deg  = "float", rad   = "float",
-	exp  = "float", log   = "float", log10 = "float",
-	--pow  = {"float", "float"}, -- it already exists as an operator
-	min  = "float...", max = "float...",
-	sqrt = "float",
-	
-	ldexp = {"float", "float"},
+	"abs","ceil", "floor", "acos", "asin", "atan", "cos", "sin", "tan",
+	"cosh", "sinh", "tanh", "deg", "rad", "exp", "log", "log10", "min", "max", "sqrt"
 }
 
 local function truthy(bool)
@@ -57,17 +46,18 @@ return function(irc)
 		end, false)
 	end
 	
-	for func, arguments in pairs(math_func_arguments) do
-		if type(arguments) == "table" then
-			irc:add_command("code", func, function(irc, state, channel, ...)
-				return tostring(math[func](...))
-			end, false, unpack(arguments))
-		else
-			irc:add_command("code", func, function(irc, state, channel, ...)
-				return tostring(math[func](...))
-			end, false, arguments)
-		end
+	for func, func in ipairs(math_func_arguments) do
+		irc:add_command("code", func, function(irc, state, channel, ...)
+			return tostring(math[func](...))
+		end, false, "float")
 	end
+	
+	irc:add_command("code", "atan2", function(irc, state, channel, y, x)
+		return tostring(math.atan2(y, x))
+	end, false, "float", "float")
+	irc:add_command("code", "ldexp", function(irc, state, channel, y, x)
+		return tostring(math.atan2(y, x))
+	end, false, "float", "float")
 	
 	irc:add_command("code", "random", function(irc, state, channel, n1, n2)
 		return tostring(math.random(unpack({n1, n2})))
@@ -77,10 +67,10 @@ return function(irc)
 
 	irc:add_command("code", "args", function(irc, state, channel, s, ...)
 		local args = {...}
-		local s = s:gsub("$(%d+)", function(i)
-			i = assert(tonumber(i), "Invalid number")
-			assert(args[i], "Insufficient arguments")
-			return args[i]
+		local s = s:gsub("([%%&])(%d+)", function(type, n)
+			n = assert(tonumber(n), "Invalid number")
+			assert(args[n], "Insufficient arguments")
+			return type == "%" and args[n] or table.concat(args, " ", n)
 		end)
 		return s
 	end, false, "string", "string...")
