@@ -3,5 +3,5 @@ return function(irc)
 	require("irc.modules.games.honeycomb")(irc)
 	require("irc.modules.games.gundraw")(irc)
 	require("irc.modules.games.roulette")(irc)
-	require("irc.modules.games.tictactoe")(irc)
+	require("irc.modules.games.mnkpq")(irc)
 end
