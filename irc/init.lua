@@ -765,7 +765,7 @@ function irc:error(channel, err)
 end
 
 function irc:lower(s)
-	return (utils[self.isupport.CASEMAPPING .. "_lower"] or utils.rfc1459_lower)(s)
+	return (utils[(self.isupport.CASEMAPPING or "rfc1459") .. "_lower"])(s)
 end
 
 function irc:send(...)
