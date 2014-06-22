@@ -6,9 +6,9 @@ end
 
 local handlers = {
 	-- TODO, add more handlers
-	["twitter.com"] = function(url, s)
+	--["twitter.com"] = function(url, s)
 		--if url:match()
-	end
+	--end
 }
 
 local limited_sink = function(t, max)
@@ -26,18 +26,19 @@ return function(irc)
 	irc:add_hook("url_info", "on_non_cmd_privmsg", function(irc, state, channel, msg)
 		local http = require("socket.http")
 		http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
-
-		local socket_url = require("socket.url")
-		for url in msg:gmatch("https?://%S+") do
-			local parsed = socket_url.parse(url)
-			if parsed then -- idk if it can return nil
+		local https = require("ssl.https")
+		local url = require("socket.url")
+		for uri in msg:gmatch("https?://%S+") do
+			local parsed = url.parse(uri)
+			if parsed and parsed.scheme then -- idk if it can return nil
 				local t = {}
-				local success, _, response_code = pcall(http.request, {
-					url = url,
+				local request = ({http=http, https=https})[parsed.scheme].request
+				local success, _, response_code = pcall(request, {
+					url = uri,
 					sink = limited_sink(t, 1024 * 1024) -- 1MiB should be enough
 				})
 				local handler = handlers[parsed.host] or default_handler
-				local url_info = handler(url, table.concat(t))
+				local url_info = handler(uri, table.concat(t))
 				if url_info then
 					irc:privmsg(channel, url_info)
 				end
