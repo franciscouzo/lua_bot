@@ -1,5 +1,5 @@
 local utils = require("irc.utils")
---local html = require("irc.html")
+local html = require("irc.html")
 
 return function(irc)
 	irc:add_command("google", "google", function(irc, state, channel, msg)
@@ -23,6 +23,7 @@ return function(irc)
 		local first_result = obj.responseData.results[result_n]
 		local result_url = first_result.unescapedUrl
 		local content = first_result.content:gsub("</?b>", "\002"):gsub("\n", " ")
+		content = html.unescape(content)
 
 		return ("%s - %s"):format(result_url, content)
 	end, true)
@@ -45,7 +46,8 @@ return function(irc)
 		assert(not err, err)
 
 		local item = obj.data.items[result_n]
-		return ("https://youtu.be/%s - [%i:%02i] %s"):format(item.id, item.duration / 60, item.duration % 60, item.title)
+		local title = html.unescape(item.title)
+		return ("https://youtu.be/%s - [%i:%02i] %s"):format(item.id, item.duration / 60, item.duration % 60, title)
 	end, true)
 	irc:add_command("google", "youtube_random", function(irc, state, channel, msg)
 		local http = require("socket.http")
