@@ -38,6 +38,7 @@ return function(irc)
 			for channel in pairs(irc.channels) do
 				table.insert(channels, channel)
 			end
+			irc.channels = {}
 			irc:join(channels)
 		else
 			irc.channels = {}
