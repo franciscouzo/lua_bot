@@ -1,3 +1,5 @@
+local html = require("irc.html")
+
 return function(irc)
 	local languages = {
 		["c"] = "c", ["c++"] = "C++", ["d"] = "D", ["haskell"] = "Haskell",
@@ -32,7 +34,7 @@ return function(irc)
 			irc:privmsg(channel, headers.location)
 		else
 			irc:notice(state.nick, headers.location)
-			return output
+			return html.unescape(output)
 		end
 	end, true)
 end
