@@ -166,5 +166,5 @@ return function(irc)
 	require("irc.modules.code.string")(irc)
 	require("irc.modules.code.list")(irc)
 	require("irc.modules.code.math_notation")(irc)
-	require("irc.modules.code.ideone")(irc)
+	require("irc.modules.code.codepad")(irc)
 end
