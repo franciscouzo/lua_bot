@@ -401,5 +401,6 @@ return function(irc, state, channel)
 	local description = words.subhead[math.random(#words.subhead)]
 	local author = words.author[math.random(#words.author)]
 	
-	return article_title, description .. ". —" .. author
+	return article_title
+	--description .. ". —" .. author
 end
