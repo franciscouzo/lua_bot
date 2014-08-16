@@ -27,7 +27,7 @@ return function(irc)
 			return
 		end
 
-		local output = response:match("<pre>\n(.-)\n</pre>")
+		local output = response:match("<pre>\n(.-)\n*</pre>")
 		local lines = select(2, output:gsub("\n", "")) + 1
 
 		if lines >= 2 or #output > 300 then
