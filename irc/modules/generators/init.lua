@@ -4,6 +4,7 @@ return function(irc)
 	irc:add_command("generators", "excuse",   require("irc.modules.generators.excuse"),   false)
 	irc:add_command("generators", "medium",   require("irc.modules.generators.medium"),   false)
 	irc:add_command("generators", "newage",   require("irc.modules.generators.newage"),   false)
+	irc:add_command("generators", "headline",   require("irc.modules.generators.headline"), false)
 	irc:add_command("generators", "insult",   require("irc.modules.generators.insult"),   false, "+int...")
 	irc:add_command("generators", "bullshit", require("irc.modules.generators.bullshit"), false, "+int...")
 
