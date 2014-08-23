@@ -747,7 +747,7 @@ function irc:run_command(state, channel, message)
 					return nil
 				end
 				ret = self:call_hook("on_unknown_user_cmd", command, state, channel, str)
-				if not ret then
+				if not ret and (self:get_config("error_reporting", channel) or {}).unknown_command then
 					return nil, ("Unknown command %q"):format(command)
 				end
 				return ret

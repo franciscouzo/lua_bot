@@ -31,7 +31,8 @@ return {
 	prefixes = {".", "%s, ", "%s: "},
 	error_reporting = {
 		public_debug = true,
-		admin_debug = true
+		admin_debug = true,
+		unknown_command = false
 	},
 	
 	timeout = 300,
