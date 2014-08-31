@@ -1,7 +1,7 @@
 local utils = require("irc.utils")
 
 return function(irc)
-	irc:add_command("games", "honeycomb_start", function(irc, state, channel, ...)
+	irc:add_command("honeycomb", "honeycomb_start", function(irc, state, channel, ...)
 		local players = {[irc:lower(state.nick)] = true}
 		local order_players = {state.nick}
 		
