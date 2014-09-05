@@ -119,7 +119,7 @@ return function(irc)
 		if coins < 0 then
 			return irc:action(("throws %s coin%s to the floor"):format(math.abs(coins), coins == -1 and "" or "s"))
 		elseif coins == 0 then
-			return irc:action("moves his hands as he flipped a coin")
+			return irc:action("moves his hands as if he flipped a coin")
 		elseif coins == 1 then
 			return "Your result is " .. (math.random(2) == 1 and "tails" or "heads")
 		else
