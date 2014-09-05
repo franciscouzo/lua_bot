@@ -43,6 +43,7 @@ return function(irc)
 		local seconds, msg = msg:match("^(.-) (.+)$")
 		assert(seconds and msg, "Insufficient arguments")
 		seconds = assert(tonumber(seconds), "Invalid number")
+		irc:notice(state.nick, "ok " .. state.nick)
 		socket.sleep(seconds)
 		return state.nick .. ", " .. msg
 	end, true)
