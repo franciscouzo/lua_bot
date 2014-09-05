@@ -38,7 +38,7 @@ return function(irc)
 	irc:add_command("misc", "prefixes", function(irc, state, channel, msg)
 		local prefixes = irc:get_config("prefixes", channel)
 		return utils.escape_list(prefixes)
-	end
+	end, false)
 	irc:add_command("misc", "topic", function(irc, state, channel, msg)
 		channel = irc:lower(channel)
 		assert(irc.channels[channel], "Invalid channel")
