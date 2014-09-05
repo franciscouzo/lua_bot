@@ -47,5 +47,6 @@ return function(irc)
 		local socket = require("socket")
 		table.insert(tell[nick], {by=state.nick, msg=msg, at=socket.gettime()})
 		irc.linda:set("tell.tell", tell)
+		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 end
