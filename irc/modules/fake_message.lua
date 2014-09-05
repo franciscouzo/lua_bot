@@ -13,5 +13,6 @@ return function(irc)
 		assert(msg and response, "Insufficient arguments")
 		msg, response = utils.strip(msg), utils.strip(response)
 		irc.linda:set("fake_message.messages." .. irc:lower(state.nick) .. "." .. msg, response)
+		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 end
