@@ -112,7 +112,7 @@ return function(irc)
 		local x2pi = math.random() * 2 * math.pi
 		local g2rad = math.sqrt(-2.0 * math.log(1.0 - math.random()))
 		local z = math.cos(x2pi) * g2rad
-        return mu + z * sigma
+		return mu + z * sigma
 	end
 	irc:add_command("misc", "coin", function(irc, state, channel, coins)
 		coins = coins or 1
