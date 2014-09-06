@@ -36,5 +36,6 @@ return function(irc)
 			welcomes[channel] = msg
 		end
 		irc.linda:set("welcome.welcomes", welcomes)
+		irc:notice(state.nick, "ok " .. state.nick)
 	end, false) -- non-async
 end
