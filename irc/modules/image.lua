@@ -115,7 +115,7 @@ return function(irc)
 					end
 					local avg = {red   = (pixels[i1].red   + pixels[i2].red  ) / 2,
 					             green = (pixels[i1].green + pixels[i2].green) / 2,
-								 blue  = (pixels[i1].blue  + pixels[i2].blue ) / 2}
+					             blue  = (pixels[i1].blue  + pixels[i2].blue ) / 2}
 					local new_color = rgb2irc(avg)
 					irc_pixels[i1] = new_color
 					irc_pixels[i2] = new_color
