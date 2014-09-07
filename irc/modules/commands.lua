@@ -29,6 +29,7 @@ return function(irc)
 			return assert(irc:run_command(state, channel, command .. msg))
 		end, true))
 		commands[cmd:lower()] = command
+		irc:notice(state.nick, "ok " .. state.nick)
 	end, false) -- not threaded
 	
 	irc:add_command("commands", "del_cmd", function(irc, state, channel, command)
@@ -37,6 +38,7 @@ return function(irc)
 		assert(irc.commands[command].module == "user_commands", "Non-deletable command")
 		assert(irc:del_command(command))
 		commands[command:lower()] = nil
+		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 	
 	irc:add_command("commands", "commands", function(irc, state, channel, msg)
