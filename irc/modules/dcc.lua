@@ -29,14 +29,14 @@ local dcc = {}
 
 dcc.dcc_list = function(irc, state, channel, msg)
 	local files = {}
-	for file in pairs(irc.linda:get("dcc.files")) do
+	for file in pairs(irc:get_config("dcc", channel).files) do
 		files[#files + 1] = file
 	end
 	return utils.escape_list(files)
 end
 
 dcc.dcc_download = function(irc, state, channel, filename)
-	assert(irc:get_config("dcc", channel)[filename], "Invalid file")
+	assert(irc:get_config("dcc", channel).files[filename], "Invalid file")
 	local port
 	if irc.config.dcc.random_port then
 		port = 0
