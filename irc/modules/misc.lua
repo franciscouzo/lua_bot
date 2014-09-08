@@ -67,38 +67,21 @@ return function(irc)
 		irc:privmsg(channel, ("\003,%i%s\0030,%i "):format(background, (" "):rep(len), shadow))
 		irc:privmsg(channel, (" \003,%s%s"):format(shadow, (" "):rep(len)))
 	end, false)
-	
-	irc:add_command("misc", "dice", function(irc, state, channel, msg)
+
+	local function dice(msg)
 		local n, sides, modifier = msg:match("(%d+)d(%d+)([+-]?%d*)")
+		
 		n = assert(tonumber(n), "Invalid number")
 		sides = assert(tonumber(sides), "Invalid number")
 		modifier = tonumber(modifier) or 0
 
-		assert(n >= 1 and n <= 30, "The dices are all over the floor!")
-		assert(sides  >= 4, "What kind of dice has less than 4 sides?")
-		assert(sides  <= 100, "That's practically a sphere")
+		assert(n >= 1,  "Moves his hand as he threw a dice")
+		assert(n <= 30, "The dices are all over the floor!")
+		assert(sides >= 4,   "What kind of dice has less than 4 sides?")
+		assert(sides <= 100, "That's practically a sphere")
 		assert(modifier >= -10000, "Modifier is too low")
 		assert(modifier <=  10000, "Modifier is too big")
-
-		local total = 0
-		for i = 1, n do
-			local result = math.random(sides) + modifier
-			total = total + result
-		end
-		return tostring(total)
-	end, false)
-	irc:add_command("misc", "dice_f", function(irc, state, channel, msg)
-		local n, sides, modifier = msg:match("(%d+)d(%d+)([+-]?%d*)")
-		n = assert(tonumber(n), "Invalid number")
-		sides = assert(tonumber(sides), "Invalid number")
-		modifier = tonumber(modifier) or 0
-
-		assert(n >= 1 and n <= 30, "The dices are all over the floor!")
-		assert(sides  >= 4, "What kind of dice has less than 4 sides?")
-		assert(sides  <= 100, "That's practically a sphere")
-		assert(modifier >= -10000, "Modifier is too low")
-		assert(modifier <=  10000, "Modifier is too big")
-
+		
 		local total = 0
 		local results = {}
 		for i = 1, n do
@@ -109,8 +92,28 @@ return function(irc)
 		
 		local max = n * (sides + modifier)
 		
-		return ("Total %i / %i [%.2f%%] :: Results [%s]"):format(total, max, (total / max) * 100, table.concat(results, ", "))
+		return {
+			total   = total,
+			results = results,
+			max     = max
+		}
+	end
+	irc:add_command("misc", "dice", function(irc, state, channel, msg)
+		return tostring(dice(msg).total)
 	end, false)
+	irc:add_command("misc", "dice_f", function(irc, state, channel, msg)
+		local result = dice(msg)
+		
+		return ("Total %i / %i [%.2f%%] :: Results [%s]"):format(
+			result.total,
+			result.max,
+			(result.total / result.max) * 100,
+			table.concat(result.results, ", ")
+		)
+	end, false)
+	irc:add_command("misc", "dice_l", function(irc, state, channel, msg)
+		return utils.escape_list(dice(msg).results)
+	end)
 	local function random_gauss(mu, sigma)
 		-- copied from python's random.py
 		local x2pi = math.random() * 2 * math.pi
