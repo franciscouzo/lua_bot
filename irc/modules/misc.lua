@@ -113,7 +113,7 @@ return function(irc)
 	end, false)
 	irc:add_command("misc", "dice_l", function(irc, state, channel, msg)
 		return utils.escape_list(dice(msg).results)
-	end)
+	end, false)
 	local function random_gauss(mu, sigma)
 		-- copied from python's random.py
 		local x2pi = math.random() * 2 * math.pi
