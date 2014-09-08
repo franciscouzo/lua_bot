@@ -206,12 +206,12 @@ return function(irc)
 	end, false)
 	irc:add_command("misc", "slap", function(irc, state, channel, nick)
 		local verbs = {'slaps', 'kicks', 'destroys', 'annihilates', 'punches', 'roundhouse kicks', 'rusty hooks', 'pwns', 'owns'}
-		local verb = verbs[math.random(#verbs)]
-		nick = utils.strip(nick)
-		if irc:lower(nick) == irc:lower(irc.nick) then
-			nick = "itself"
+		local verb = utils.random_choice(verbs)
+		local whom = utils.strip(nick)
+		if irc:lower(whom) == irc:lower(irc.nick) then
+			whom = irc:admin_user_mode(state.nick, "v") and "itself" or state.nick
 		end
-		return irc:action(verb .. " " .. nick)
+		return irc:action(verb .. " " .. whom)
 	end, false)
 	irc:add_command("misc", "annoy", function(irc, state, channel, msg)
 		return (msg:gsub(".", function(c)
