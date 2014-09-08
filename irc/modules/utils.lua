@@ -95,9 +95,10 @@ return function(irc)
 		irc.add_hook = add_hook
 		irc.add_command = add_command
 	end, false)]]
-	irc:add_command("utils", "reload_config", function(irc, state, channel, module)
+	irc:add_command("utils", "reload_config", function(irc, state, channel, config_name)
 		assert(not irc.threaded, "This command can't be run on threaded mode")
-		irc.config = dofile("config.lua")
+		config_name = config_name ~= "" and config_name or arg[1]
+		irc.config = dofile(config_name)
 	end, false)
 	
 	local function multimode_format(plus_or_minus, mode, n, users)
