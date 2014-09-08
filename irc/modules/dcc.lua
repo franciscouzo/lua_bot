@@ -83,7 +83,7 @@ dcc.dcc_download = function(irc, state, channel, filename)
 		end
 	end
 
-	if not irc:get_config("dcc", channel).random_port then
+	if not irc.config.dcc.random_port then
 		used_ports[port] = false
 		irc.linda:set("dcc.used_ports", used_ports)
 	end
