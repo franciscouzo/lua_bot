@@ -70,6 +70,7 @@ dcc.dcc_download = function(irc, state, channel, filename)
 
 	server:settimeout(irc:get_config("dcc", channel).timeout or 60)
 	local conn, err = server:accept()
+	print(state.nick .. "'s ip: " .. conn:getsockname())
 
 	server:close()
 
