@@ -1,11 +1,25 @@
 -- http://www.vidarholen.net/~vidar/generatemaze.py
 
 return function(irc)
-	irc:add_command("maze", "maze", function(irc, state, channel, width, height, rounded)
+	local char_types = {
+		square  = {' ', '╶', '╷', '┌', '╴', '─', '┐', '┬', '╵', '└', '│', '├', '┘', '┴', '┤', '┼'},
+		rounded = {' ', '╶', '╷', '╭', '╴', '─', '╮', '┬', '╵', '╰', '│', '├', '╯', '┴', '┤', '┼'},
+		bold    = {' ', '╺', '╻', '┏', '╸', '━', '┓', '┳', '╹', '┗', '┃', '┣', '┛', '┻', '┫', '╋'},
+		cables  = {' ', '╼', '╽', '┏', '╾', '━', '┓', '┳', '╿', '┗', '┃', '┣', '┛', '┻', '┫', '╋'},
+		double  = {' ', '═', '║', '╔', '═', '═', '╗', '╦', '║', '╚', '║', '╠', '╝', '╩', '╣', '╬'}
+	}
+	local double_border_chars = {' ', ' ', ' ', '╔', ' ', '═', '╗', '╤', ' ', '╚', '║', '╟', '╝', '╧', '╢', ' '}
+
+	irc:add_command("maze", "maze", function(irc, state, channel, width, height, char_type, double_borders)
 		assert(width  >= 5 and width  <= 80, "invalid width")
 		assert(height >= 5 and height <= 30, "invalid height")
 
-		rounded = rounded and rounded >= 1 or false
+		char_type = char_type or "square"
+		assert(char_types[char_type], "Invalid char_type")
+
+		double_borders = double_borders and double_borders == "true" or false
+
+		local chars = char_types[char_type]
 
 		local map = {}
 		for i = 1, width do
@@ -92,13 +106,6 @@ return function(irc)
 			end
 		end
 
-		local chars
-		if rounded then
-			chars = {' ', '╶', '╷', '╭', '╴', '─', '╮', '┬', '╵', '╰', '│', '├', '╯', '┴', '┤', '┼'}
-		else
-			chars = {' ', '╶', '╷', '┌', '╴', '─', '┐', '┬', '╵', '└', '│', '├', '┘', '┴', '┤', '┼'}
-		end
-
 		for y = 1, height - 1 do
 			local line = {}
 			for x = 1, width - 1 do
@@ -108,10 +115,13 @@ return function(irc)
 					(map[x][y + 1].right  and 1 or 0) * 2 +
 					(map[x + 1][y].bottom and 1 or 0)
 
-				line[#line + 1] = chars[char + 1]
-				line[#line + 1] = chars[(not map[x + 1][y].bottom) and 1 or 6]
+				local _double_borders = double_borders and ((x == 1 or x == width - 1) or (y == 1 or y == height - 1))
+				line[#line + 1] = (_double_borders and double_border_chars or chars)[char + 1]
+				
+				local top_bottom_edges = double_borders and (y == 1 or y == height - 1)
+				line[#line + 1] = (top_bottom_edges and double_border_chars or chars)[(not map[x + 1][y].bottom) and 1 or 6]
 			end
-			irc:privmsg(channel, table.concat(line))
+			print(table.concat(line))
 		end
-	end, false, "+int", "+int", "+int...")
+	end, false, "+int", "+int", "+string...")
 end
