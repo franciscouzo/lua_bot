@@ -123,5 +123,5 @@ return function(irc)
 			end
 			print(table.concat(line))
 		end
-	end, false, "+int", "+int", "+string...")
+	end, false, "+int", "+int", "string...")
 end
