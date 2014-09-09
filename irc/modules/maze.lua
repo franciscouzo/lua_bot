@@ -114,7 +114,7 @@ return function(irc)
 				line[#line + 1] = chars[char + 1]
 				line[#line + 1] = chars[(not map[x + 1][y].bottom) and 1 or 6]
 			end
-			irc:privmsg(channel, line)
+			irc:privmsg(channel, table.concat(line))
 		end
 	end, false, "+int", "+int", "+int...")
 end
