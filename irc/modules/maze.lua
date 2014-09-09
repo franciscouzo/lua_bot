@@ -47,9 +47,6 @@ return function(irc)
 				solutiontrack = solutiontrack - 1
 			end
 
-			print(map[x], x, y)
-			print(map[x][y])
-			print(map[x][y].captured)
 			if not map[x][y].captured then
 				map[x][y].captured = true
 				captures = captures + 1
