@@ -64,13 +64,18 @@ return function(irc)
 
 	local source = "https://github.com/franciscouzo/lua_bot/blob/master/"
 	irc:add_command("commands", "cmd_info", function(irc, state, channel, command)
-		command = utils.strip(command)
+		command = utils.strip(command):lower()
 		assert(irc.commands[command], "Nonexistent command")
+
+		local module = irc.commands[command].module
+
+		if module == "user_commands" then
+			return ("user_commands -> %s | %s"):format(command, commands[command])
+		end
 
 		local debug = require("debug")
 
 		local info = debug.getinfo(irc.commands[command].func, "S")
-		local module = irc.commands[command].module
 
 		if info.source:sub(1, 1) == "@" then
 			 local url = source .. info.source:sub(4) .. "#L" .. info.linedefined -- assumes relative directory
