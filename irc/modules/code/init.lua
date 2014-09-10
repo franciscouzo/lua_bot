@@ -119,7 +119,7 @@ return function(irc)
 
 		for _, element in ipairs(list) do
 			local command = loop_command:gsub(var_name, element)
-			local result = assert(irc:run_command(state, channel, command))
+			local result = irc:run_command(state, channel, command)
 			irc:privmsg(channel, result)
 		end
 	end, true)
