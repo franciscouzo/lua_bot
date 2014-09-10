@@ -20,6 +20,7 @@ return function(irc)
 			file:close()
 		end
 	end)
+
 	irc:add_command("commands", "add_cmd", function(irc, state, channel, msg)
 		assert(not irc.threaded, "This command can't be run on threaded mode")
 		local cmd, command = unpack(utils.split(msg, " ", 1))
@@ -31,8 +32,10 @@ return function(irc)
 		commands[cmd:lower()] = command
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false) -- not threaded
-	
+
 	irc:add_command("commands", "del_cmd", function(irc, state, channel, command)
+		command = utils.strip(command)
+
 		assert(not irc.threaded, "This command can't be run on threaded mode")
 		assert(irc.commands[command], "Nonexistent command")
 		assert(irc.commands[command].module == "user_commands", "Non-deletable command")
@@ -40,7 +43,7 @@ return function(irc)
 		commands[command:lower()] = nil
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
-	
+
 	irc:add_command("commands", "commands", function(irc, state, channel, msg)
 		local module = utils.strip(msg)
 		if module == "" then
@@ -57,5 +60,23 @@ return function(irc)
 			table.insert(commands, command)
 		end
 		return utils.escape_list(commands)
+	end, false)
+
+	local source = "https://github.com/franciscouzo/lua_bot/blob/master/"
+	irc:add_command("commands", "cmd_info", function(irc, state, channel, command)
+		command = utils.strip(command)
+		assert(irc.commands[command], "Nonexistent command")
+
+		local debug = require("debug")
+
+		local info = debug.getinfo(irc.commands[command].func, "S")
+		local module = irc.commands[command].module
+
+		if info.source:sub(1, 1) == "@" then
+			 local url = source .. info.source:sub(4) .. "#L" .. info.linedefined -- assumes relative directory
+			 return ("%s -> %s | %s"):format(module, command, url)
+		end
+
+		return ("%s -> %s"):format(module, command)
 	end, false)
 end
