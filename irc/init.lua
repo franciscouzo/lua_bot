@@ -377,10 +377,11 @@ end
 
 function irc:del_command(command)
 	command = command:lower()
-	local module = self.commands[command].module
-	if not module then
+	if not self.commands[command] or not self.commands[command].module then
 		return nil, "Nonexistent command " .. command
 	end
+	local module = self.commands[command].module
+	
 	for i, cmd in ipairs(self.module_list[module]) do
 		if cmd == command then
 			self.module_list[module][i] = nil
