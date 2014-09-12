@@ -133,10 +133,10 @@ return function(irc)
 					irc_pixels = {color1_4, color2_3, color1_4, color2_3}
 				end
 				local foreground, background = irc_pixels[1], irc_pixels[2] or 0
-				local i = irc_pixels[1] * 1 +
-				          irc_pixels[2] * 2 +
-				          irc_pixels[3] * 4 +
-				          irc_pixels[4] * 8
+				local i = (irc_pixels[1] == foreground and 1 or 0) +
+				          (irc_pixels[2] == foreground and 2 or 0) +
+				          (irc_pixels[3] == foreground and 4 or 0) +
+				          (irc_pixels[4] == foreground and 4 or 0)
 				local block = blocks[i + 1]
 				table.insert(line, ("\003%i,%i"):format(foreground, background) .. block)
 			end
