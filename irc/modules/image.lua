@@ -160,11 +160,7 @@ return function(irc)
 				local foreground = rgb2irc(image:get_pixel(x, y))
 				local background = rgb2irc(image:get_pixel(x, y + 1))
 
-				if foreground == background then
-					table.insert(line, ("\003%i"):format(foreground) .. "█")
-				else
-					table.insert(line, ("\003%i,%i"):format(foreground, background) .. "▀")
-				end
+				table.insert(line, ("\003%i,%i"):format(background, foreground) .. "▄")
 			end
 			irc:privmsg(channel, table.concat(line))
 		end
