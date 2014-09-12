@@ -42,6 +42,7 @@ end
 local function get_image(url)
 	local success, imlib2 = pcall(require, "imlib2")
 	assert(success, "imlib2 is not installed")
+	imlib2.flush_cache()
 	imlib2.set_anti_alias(true)
 
 	local http = require("socket.http")
@@ -67,9 +68,11 @@ local function thumbnail(image, max_width, max_height)
 	if width > max_width or height > max_height then
 		local ratio = width / height
 		if ratio > max_width / max_height then
-			image:crop_and_scale(0, 0, width - 1, height - 1, max_width, height / (width / max_width))
+			image:crop_and_scale(0, 0, width - 1, height - 1,
+			                     max_width, height / (width / max_width))
 		else
-			image:crop_and_scale(0, 0, width - 1, height - 1, width / (height / max_height), max_height)
+			image:crop_and_scale(0, 0, width - 1, height - 1,
+			                     width / (height / max_height), max_height)
 		end
 	end
 end
@@ -79,7 +82,9 @@ return function(irc)
 		local blocks = {" ", "▘", "▝", "▀", "▖", "▌", "▞", "▛", "▗", "▚", "▐", "▜", "▄", "▙", "▟", "█"}
 
 		local image = get_image(url)
-		thumbnail(image, 100, 60)
+		image:crop_and_scale(0, 0, image:get_width() - 1, image:get_height() - 1,
+		                     image:get_width() * 2, image:get_height())
+		thumbnail(image, 50, 60)
 
 		width  = image:get_width()  - image:get_width()  % 2 -- ignore last odd pixel
 		height = image:get_height() - image:get_height() % 2
@@ -142,9 +147,8 @@ return function(irc)
 			end
 			irc:privmsg(channel, table.concat(line))
 		end
-		
+
 		image:free()
-		--imlib2.flush_cache()
 	end, true)
 
 	irc:add_command("image", "image2", function(irc, state, channel, url)
@@ -154,9 +158,9 @@ return function(irc)
 		width  = image:get_width() -- no horizontal subpixels, since characters are half as wide than as tall
 		height = image:get_height() - image:get_height() % 2 -- ignore last odd pixel
 
-		for y = 0, height - 1, 2 do
+		for y = 0, height - 1 do
 			local line = {}
-			for x = 0, width - 1, 2 do
+			for x = 0, width - 1 do
 				local foreground = rgb2irc(image:get_pixel(x, y))
 				local background = rgb2irc(image:get_pixel(x, y + 1))
 
@@ -164,8 +168,7 @@ return function(irc)
 			end
 			irc:privmsg(channel, table.concat(line))
 		end
-		
+
 		image:free()
-		--imlib2.flush_cache()
 	end, true)
 end
