@@ -82,9 +82,9 @@ return function(irc)
 		local blocks = {" ", "▘", "▝", "▀", "▖", "▌", "▞", "▛", "▗", "▚", "▐", "▜", "▄", "▙", "▟", "█"}
 
 		local image = get_image(url)
-		image:crop_and_scale(0, 0, image:get_width() - 1, image:get_height() - 1,
-		                     image:get_width() * 2, image:get_height())
-		thumbnail(image, 50, 60)
+		--image:crop_and_scale(0, 0, image:get_width() - 1, image:get_height() - 1,
+		--                     image:get_width() * 2, image:get_height())
+		thumbnail(image, 100, 60)
 
 		width  = image:get_width()  - image:get_width()  % 2 -- ignore last odd pixel
 		height = image:get_height() - image:get_height() % 2
