@@ -158,7 +158,7 @@ return function(irc)
 		width  = image:get_width() -- no horizontal subpixels, since characters are half as wide than as tall
 		height = image:get_height() - image:get_height() % 2 -- ignore last odd pixel
 
-		for y = 0, height - 1 do
+		for y = 0, height - 1, 2 do
 			local line = {}
 			for x = 0, width - 1 do
 				local foreground = rgb2irc(image:get_pixel(x, y))
