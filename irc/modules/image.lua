@@ -39,54 +39,54 @@ local function rgb2irc(rgb)
 	return nearest_i
 end
 
-return function(irc)
-	local blocks = {" ", "▘", "▝", "▀", "▖", "▌", "▞", "▛", "▗", "▚", "▐", "▜", "▄", "▙", "▟", "█"}
-	local max_width  = 100
-	local max_height = 60
+local function get_image(url)
+	local success, imlib2 = pcall(require, "imlib2")
+	assert(success, "imlib2 is not installed")
+	imlib2.set_anti_alias(true)
 
-	irc:add_command("image", "image", function(irc, state, channel, url)
-		local success, imlib2 = pcall(require, "imlib2")
-		assert(success, "imlib2 is not installed")
-		imlib2.set_anti_alias(true)
+	local http = require("socket.http")
+	http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
 
-		local http = require("socket.http")
-		http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
+	local response, response_code = http.request(url)
+	assert(response_code == 200, "Error requesting page")
 
-		local response, response_code = http.request(url)
-		assert(response_code == 200, "Error requesting page")
+	local tmpname = os.tmpname()
+	local f = io.open(tmpname, "w")
+	f:write(response)
+	f:close()
 
-		local tmpname = os.tmpname()
-		local f = io.open(tmpname, "w")
-		f:write(response)
-		f:close()
+	local image = imlib2.image.load(tmpname)
 
-		local image = imlib2.image.load(tmpname)
+	os.remove(tmpname)
 
-		local width, height = image:get_width(), image:get_height()
+	return image
+end
 
+local function thumbnail(image, max_width, max_height)
+	local width, height = image:get_width(), image:get_height()
+	if width > max_width or height > max_height then
 		local ratio = width / height
-
-		if width > max_width or height > max_height then
-			local new_width, new_height
-			if ratio > max_width / max_height then
-				-- wider
-				new_width  = max_width
-				new_height = height / (width / max_width)
-			else
-				-- taller
-				new_width  = width / (height / max_height)
-				new_height = max_height
-			end
-			image:crop_and_scale(0, 0, width - 1, height - 1, new_width, new_height)
-			width, height = new_width, new_height
+		if ratio > max_width / max_height then
+			image:crop_and_scale(0, 0, width - 1, height - 1, max_width, height / (width / max_width))
+		else
+			image:crop_and_scale(0, 0, width - 1, height - 1, width / (height / max_height), max_height)
 		end
+	end
+end
 
-		width  = width  - width  % 2 -- ignore last odd pixel
-		height = height - height % 2
+return function(irc)
+	irc:add_command("image", "image", function(irc, state, channel, url)
+		local blocks = {" ", "▘", "▝", "▀", "▖", "▌", "▞", "▛", "▗", "▚", "▐", "▜", "▄", "▙", "▟", "█"}
+
+		local image = get_image(url)
+		thumbnail(image, 100, 60)
+
+		width  = image:get_width()  - image:get_width()  % 2 -- ignore last odd pixel
+		height = image:get_height() - image:get_height() % 2
 
 		local utils = require("irc.utils")
 		for y = 0, height - 1, 2 do
-			local line = ""
+			local line = {}
 			for x = 0, width - 1, 2 do
 				local pixels = {image:get_pixel(x, y    ), image:get_pixel(x + 1, y    ),
 				                image:get_pixel(x, y + 1), image:get_pixel(x + 1, y + 1)}
@@ -133,45 +133,43 @@ return function(irc)
 					irc_pixels = {color1_4, color2_3, color1_4, color2_3}
 				end
 				local foreground, background = irc_pixels[1], irc_pixels[2] or 0
-				local i = 1
-				for j = 0, 3 do
-					if irc_pixels[j + 1] == foreground then
-						i = i + (2 ^ j)
-					end
-				end
-				local block = blocks[i]
-				line = line .. ("\003%i,%i"):format(foreground, background) .. block
+				local i = irc_pixels[1] * 1 +
+				          irc_pixels[2] * 2 +
+				          irc_pixels[3] * 4 +
+				          irc_pixels[4] * 8
+				local block = blocks[i + 1]
+				table.insert(line, ("\003%i,%i"):format(foreground, background) .. block)
 			end
-			irc:privmsg(channel, line)
+			irc:privmsg(channel, table.concat(line))
 		end
 		
 		image:free()
-		imlib2.flush_cache()
-		os.remove(tmpname)
+		--imlib2.flush_cache()
+	end, true)
+
+	irc:add_command("image", "image2", function(irc, state, channel, url)
+		local image = get_image(url)
+		thumbnail(image, 50, 60)
+
+		width  = image:get_width() -- no horizontal subpixels, since characters are half as wide than as tall
+		height = image:get_height() - image:get_height() % 2 -- ignore last odd pixel
+
+		for y = 0, height - 1, 2 do
+			local line = {}
+			for x = 0, width - 1, 2 do
+				local foreground = rgb2irc(image:get_pixel(x, y))
+				local background = rgb2irc(image:get_pixel(x, y + 1))
+
+				if foreground == background then
+					table.insert(line, ("\003%i"):format(foreground) .. "█")
+				else
+					table.insert(line, ("\003%i,%i"):format(foreground, background) .. "▀")
+				end
+			end
+			irc:privmsg(channel, table.concat(line))
+		end
+		
+		image:free()
+		--imlib2.flush_cache()
 	end, true)
 end
---[=[		else:
-			for y in xrange(0, ysize, 2):
-				line = ""
-				for x in xrange(0, xsize, 2):
-					pixels = [rgb2irc(imgdata[x, y]), rgb2irc(imgdata[x + 1, y]), rgb2irc(imgdata[x, y + 1]), rgb2irc(imgdata[x + 1, y + 1])]
-					#pixels = [imgdata[x, y], imgdata[x + 1, y], imgdata[x, y + 1], imgdata[x + 1, y + 1]]
-					unique = len(set(pixels))
-
-					foreground, background = pixels[0], pixels[0]
-					block = self.blocks[15]
-
-					while len(set(pixels)) > 2:
-						count = Counter(pixels).most_common()
-						pixels[pixels.index(count[-1][0])] = count[0][0]
-
-					if unique != 1:
-						foreground = pixels[0]
-						unique = tuple(set(pixels))
-						background = unique[0] if unique[0] != foreground else unique[1]
-						block = self.blocks[sum(1 << i for i, pixel in enumerate(pixels) if pixel == foreground)]
-						
-					line += "\x03%i,%i%s" % (foreground, background, block)
-
-				irc.privmsg(state["channel"], line)
-]=]
