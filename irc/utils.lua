@@ -509,6 +509,7 @@ function Pickle:value_(v)
 	local vtype = type(v)
 	if     vtype == "string" then return string.format("%q", v)
 	elseif vtype == "number" then return v
+	elseif vtype == "boolean" then return tostring(v) -- why the fuck didn't this library already support booleans
 	elseif vtype == "table" then return "{" .. self:ref_(v) .. "}"
 	else --error("pickle a "..type(v).." is not supported")
 	end  
