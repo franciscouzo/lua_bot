@@ -9,7 +9,7 @@ return function(irc)
 
 		local games = irc.linda:get("games.honeycomb.games." .. channel) or {}
 
-		local chan = assert(irc.channels[irc:lower(channel)], "Invalid channel")
+		local chan = assert(irc.channels[channel], "Invalid channel")
 		for _, player in ipairs({...}) do
 			assert(chan.users[irc:lower(player)], player .. " is not in this channel")
 			for _, game in ipairs(games) do
