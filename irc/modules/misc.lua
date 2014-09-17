@@ -367,6 +367,19 @@ return function(irc)
 			return site .. " is down from here."
 		end
 	end, true)
+
+	irc:add_command("misc", "pronunciation", function(irc, state, channel, word)
+		local http = require("socket.http")
+		http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
+
+		word = utils.strip(word)
+
+		local response, response_code = http.request("http://dictionary.cambridge.org/dictionary/american-english/" .. word)
+		assert(response_code == 200, "Error requesting page")
+
+		return (response:match('<span class="ipa">(.+)</span>'))
+	end, true)
+
 	irc:add_hook("misc", "on_cmd_privmsg", function(irc, state, channel, msg)
 		if msg == irc.nick .. "!" then
 			irc:privmsg(channel, state.nick .. "!")
