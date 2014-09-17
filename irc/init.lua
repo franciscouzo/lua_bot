@@ -977,12 +977,8 @@ function irc:strip_color(s)
 end
 
 function irc:strip_style(s)
-	s = s:gsub("\002", "") -- bold
-	s = s:gsub("\015", "") -- color reset
-	s = s:gsub("\022", "") -- reverse color
-	s = s:gsub("\029", "") -- italics
-	s = s:gsub("\031", "") -- underline
-	
+	s = s:gsub("[\2\15\22\29\31]", "")
+	-- bold, color reset, reverse color, italics, underline
 	return self:strip_color(s)
 end
 
