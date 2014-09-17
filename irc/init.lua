@@ -973,19 +973,7 @@ function irc:optimize_format(s)
 end
 
 function irc:strip_color(s)
-	local split = utils.split(s, "\003")
-	local out = split[1] or ""
-	local l = #s
-	local i = 1
-	for i = 2, #split do
-		local str = split[i]
-		local foreground = str:match("^%d%d?")
-		local background = str:match("^,%d%d?", 1 + (foreground and #foreground or 0))
-		local str = str:sub(1 + (foreground and #foreground or 0) + 
-		                        (background and #background or 0))
-		out = out .. str
-	end
-	return out
+	return (s:gsub("\3%d?%d?,%d%d?", ""):gsub("\3%d%d?", ""):gsub("\3", ""))
 end
 
 function irc:strip_style(s)
