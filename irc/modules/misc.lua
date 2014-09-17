@@ -377,7 +377,7 @@ return function(irc)
 		local response, response_code = http.request("http://dictionary.cambridge.org/dictionary/american-english/" .. word)
 		assert(response_code == 200, "Error requesting page")
 
-		return (response:match('<span class="ipa">(.+)</span>'))
+		return (response:match('<span class="ipa">(.-)</span>'))
 	end, true)
 
 	irc:add_hook("misc", "on_cmd_privmsg", function(irc, state, channel, msg)
