@@ -42,7 +42,7 @@ return function(irc)
 		local socket = require("socket")
 		local seconds, msg = msg:match("^(.-) (.+)$")
 		assert(seconds and msg, "Insufficient arguments")
-		seconds = assert(tonumber(seconds), "Invalid number")
+		seconds = tonumber(seconds) or irc:run_command(state, channel, "seconds " .. seconds)
 		irc:notice(state.nick, "ok " .. state.nick)
 		socket.sleep(seconds)
 		return state.nick .. ", " .. msg
