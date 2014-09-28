@@ -63,7 +63,7 @@ return function(irc)
 			if #possible_commands == 0 then
 				irc:notice(state.nick, ("Unknown command %q"):format(command))
 			else
-				irc:notice(state.nick, ("Unknown command %q, possible commands: " .. table.concat(possible_commands, ", ")):format(command))
+				irc:notice(state.nick, ("Unknown command %q, possible commands: "):format(command) .. table.concat(possible_commands, ", "))
 			end
 		end
 	end)
