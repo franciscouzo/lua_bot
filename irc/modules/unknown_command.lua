@@ -58,7 +58,7 @@ return function(irc)
 		return utils.escape_list(command_recommendation(irc, utils.strip(command)))
 	end, false)
 	irc:add_hook("unknown_command", "on_unknown_user_cmd", function(irc, command, state, channel, str)
-		if (self:get_config("error_reporting", channel) or {}).unknown_command then
+		if (irc:get_config("error_reporting", channel) or {}).unknown_command then
 			local possible_commands = command_recommendation(irc, command)
 			if #possible_commands == 0 then
 				irc:notice(state.nick, ("Unknown command %q"):format(command))
