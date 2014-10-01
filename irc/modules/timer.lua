@@ -78,6 +78,6 @@ return function(irc)
 		return out
 	end, false, "+float")
 	irc:add_command("timer", "date", function(irc, state, channel, date)
-		return (date == "*t" or data == "!*t") and date or os.date(date)
+		return (date == "*t" or date == "!*t") and date or os.date(date)
 	end, false)
 end
