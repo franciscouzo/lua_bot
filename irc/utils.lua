@@ -590,4 +590,20 @@ function utils.weighted_choice(t)
 	end
 end
 
+function utils.limited_sink(t, limit)
+	local l = 0
+	return function(s)
+		if not s then
+			return
+		end
+		l = l + #s
+		if l <= limit then
+			table.concat(t, s)
+			return 1
+		else
+			return nil, "limit reached"
+		end
+	end
+end
+
 return utils
