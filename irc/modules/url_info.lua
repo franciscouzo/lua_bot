@@ -6,12 +6,35 @@ local default_handler = function(url, s)
 	if title then
 		title = title:gsub("%s+", " ")
 		title = utils.strip(title)
-		return title and "Title: " .. html.unescape(title)
+		return "Title: " .. html.unescape(title)
 	end
 end
 
 local handlers = {
 	-- TODO, add more handlers
+	["www.youtube.com"] = function(url, s)
+		if url:match("^https?://www.youtube.com/watch%?v=.+") then
+			local title = s:match('<meta name="title" content="(.-)">')
+			local views = s:match('<div class="watch%-view%-count" >(.-)</div>')
+			local likes, dislikes = s:find('<span class="yt%-uix%-button%-content">([,%d%s]-)</span>.+<span class="yt%-uix%-button%-content">([,%d%s]-)</span>')
+
+			if not (title and views and likes and dislikes) then
+				return
+			end
+
+			title = html.unescape(title)
+
+			views    = tonumber(views:gsub(","))
+			likes    = tonumber(likes:gsub(","))
+			dislikes = tonumber(dislikes:gsub(","))
+
+			if not (title and views and likes and dislikes) then
+				return
+			end
+
+			return ("%s | %i views, %i likes, %i dislikes"):format(title, views, likes, dislikes)
+		end
+	end
 	--["twitter.com"] = function(url, s)
 		--if url:match()
 	--end
@@ -32,8 +55,9 @@ return function(irc)
 					url = uri,
 					sink = utils.limited_sink(t, 1024 * 1024) -- 1MiB should be enough
 				})
+				local s = table.concat(t)
 				local handler = handlers[parsed.host] or default_handler
-				local url_info = handler(uri, table.concat(t))
+				local url_info = handler(uri, s) or default_handler(url, s)
 				if url_info then
 					irc:privmsg(channel, url_info)
 				end
