@@ -16,7 +16,7 @@ local handlers = {
 		if url:match("^https?://www.youtube.com/watch%?v=.+") then
 			local title = s:match('<meta name="title" content="(.-)">')
 			local views = s:match('<div class="watch%-view%-count" >(.-)</div>')
-			local likes, dislikes = s:find('<span class="yt%-uix%-button%-content">([,%d%s]-)</span>.+<span class="yt%-uix%-button%-content">([,%d%s]-)</span>')
+			local likes, dislikes = s:match('<span class="yt%-uix%-button%-content">([,%d%s]-)</span>.+<span class="yt%-uix%-button%-content">([,%d%s]-)</span>')
 
 			if not (title and views and likes and dislikes) then
 				return
