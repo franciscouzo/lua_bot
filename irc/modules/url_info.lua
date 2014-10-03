@@ -1,8 +1,12 @@
 local html = require("irc.html")
+local utils = require("irc.utils")
+
 local default_handler = function(url, s)
 	local title = s:match("<[Tt][Ii][Tt][Ll][Ee]>([^<]*)<")
-	title = title:gsub("%s", " ")
-	return title and "Title: " .. html.unescape(title)
+	if title then
+		title = title:gsub("%s+", " ")
+		return title and "Title: " .. html.unescape(title)
+	end
 end
 
 local handlers = {
@@ -11,17 +15,6 @@ local handlers = {
 		--if url:match()
 	--end
 }
-
-local limited_sink = function(t, max)
-	local l = 0
-	return function(s)
-		l = l + #s
-		table.insert(t, s)
-		if l >= max then
-			error("Max reached")
-		end
-	end
-end
 
 return function(irc)
 	irc:add_hook("url_info", "on_non_cmd_privmsg", function(irc, state, channel, msg)
@@ -36,7 +29,7 @@ return function(irc)
 				local request = ({http=http, https=https})[parsed.scheme].request
 				local success, _, response_code = pcall(request, {
 					url = uri,
-					sink = limited_sink(t, 1024 * 1024) -- 1MiB should be enough
+					sink = utils.limited_sink(t, 1024 * 1024) -- 1MiB should be enough
 				})
 				local handler = handlers[parsed.host] or default_handler
 				local url_info = handler(uri, table.concat(t))
