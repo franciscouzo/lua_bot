@@ -24,9 +24,9 @@ local handlers = {
 
 			title = html.unescape(title)
 
-			views    = tonumber(views:gsub(",", ""))
-			likes    = tonumber(likes:gsub(",", ""))
-			dislikes = tonumber(dislikes:gsub(",", ""))
+			views    = tonumber((views:gsub(",", "")))
+			likes    = tonumber((likes:gsub(",", "")))
+			dislikes = tonumber((dislikes:gsub(",", "")))
 
 			if not (title and views and likes and dislikes) then
 				return
