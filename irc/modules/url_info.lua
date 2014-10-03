@@ -26,7 +26,7 @@ local handlers = {
 				dislikes = tonumber((dislikes:gsub(",", "")))
 
 				return ("%s | %i views, %i likes, %i dislikes"):format(title, views, likes, dislikes)
-			end
+			end)
 			if success then
 				return title
 			end
