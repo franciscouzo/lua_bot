@@ -598,7 +598,7 @@ function utils.limited_sink(t, limit)
 		end
 		l = l + #s
 		if l <= limit then
-			table.concat(t, s)
+			table.insert(t, s)
 			return 1
 		else
 			return nil, "limit reached"
