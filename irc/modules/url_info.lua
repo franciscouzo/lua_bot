@@ -5,6 +5,7 @@ local default_handler = function(url, s)
 	local title = s:match("<[Tt][Ii][Tt][Ll][Ee]>([^<]*)<")
 	if title then
 		title = title:gsub("%s+", " ")
+		title = utils.strip(title)
 		return title and "Title: " .. html.unescape(title)
 	end
 end
