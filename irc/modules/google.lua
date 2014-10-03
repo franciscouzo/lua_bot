@@ -51,7 +51,7 @@ return function(irc)
 	end, true)
 	irc:add_command("google", "youtube_random", function(irc, state, channel, msg)
 		local http = require("socket.http")
-		local response, response_code = http.request("http://www.youtuberandomvideo.com/get_video.php")
+		local youtube_id, response_code = http.request("http://www.youtuberandomvideo.com/get_video.php")
 		assert(response_code == 200, "Error requesting page")
 		return "https://youtu.be/" .. youtube_id
 	end, true)
