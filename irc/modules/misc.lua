@@ -1,17 +1,5 @@
 local json = require("json")
-
 local utils = require("irc.utils")
-
-local limited_sink = function(t, max)
-	local l = 0
-	return function(s)
-		l = l + #s
-		table.insert(t, s)
-		if l >= max then
-			error("Max reached")
-		end
-	end
-end
 
 return function(irc)
 	irc:add_command("misc", "say", function(irc, state, channel, msg)
@@ -235,7 +223,7 @@ return function(irc)
 		local http = require("socket.http")
 		local success, err, _, headers = pcall(http.request, {
 			url = url,
-			sink = limited_sink({}, 1024 * 1024)
+			sink = utils.limited_sink({}, 1024)
 		})
 		assert(success, err)
 		local out = {}
