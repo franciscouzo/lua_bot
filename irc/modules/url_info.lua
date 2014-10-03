@@ -1,6 +1,7 @@
 local html = require("irc.html")
 local default_handler = function(url, s)
 	local title = s:match("<[Tt][Ii][Tt][Ll][Ee]>([^<]*)<")
+	title = title:gsub("%s", " ")
 	return title and "Title: " .. html.unescape(title)
 end
 
