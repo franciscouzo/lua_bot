@@ -3,14 +3,14 @@
 local utils = require("irc.utils")
 
 local function whos_turn(game)
-	local turn = game.turn - game.p
+	local turn = game.turn - game.q
 	local t = true
 	while true do
 		if turn <= 0 then
 			return game.players[t and 1 or 2]
 		end
 		t = not t
-		turn = turn - game.q
+		turn = turn - game.p
 	end
 end
 
@@ -82,8 +82,8 @@ return function(irc)
 		-- m: width
 		-- n: height
 		-- k: stones in a row to win
-		-- p: first turn's stones
-		-- q: non-first turn's stones
+		-- p: non-first's turn stones
+		-- q: first turn's stones
 
 		gravity = gravity and gravity >= 1 or false
 		
@@ -103,8 +103,8 @@ return function(irc)
 		assert(p >= 1, "First turn must be greater than one")
 		assert(q >= 1, "non-first turn must be greater than one")
 
-		assert(p < k, "First player could win in first turn")
-		assert(q < k, "Second player could win in first turn")
+		assert(p < k, "Second player could win in first turn")
+		assert(q < k, "First player could win in first turn")
 
 		local board = {}
 		for i = 1, n do
