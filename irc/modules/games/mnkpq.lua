@@ -140,10 +140,8 @@ return function(irc)
 				break
 			end
 		end
-		if not game then
-			error("You're not playing")
-		end
-
+		
+		assert(game, "You're not playing")
 		assert(irc:lower(channel) == game.channel, "Invalid channel")
 
 		local player = game.players[1] == whos_turn(game) and "O" or "X"

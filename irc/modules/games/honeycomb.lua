@@ -55,9 +55,7 @@ return function(irc)
 			end
 		end
 
-		if not game then
-			error("You're not playing")
-		end
+		assert(game, "You're not playing")
 
 		s = utils.strip(s)
 		local n = assert(tonumber(s), "Invalid number")
@@ -110,8 +108,6 @@ return function(irc)
 			end
 		end
 
-		if not game then
-			error("You're not playing")
-		end
+		assert(game, "You're not playing")
 	end, false)
 end
