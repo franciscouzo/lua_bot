@@ -1,3 +1,5 @@
+-- http://www.connect6.org/k-in-a-row.pdf
+
 local utils = require("irc.utils")
 
 local function whos_turn(game)
