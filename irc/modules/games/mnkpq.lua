@@ -128,7 +128,8 @@ return function(irc)
 		irc.linda:set("mnkpq.games", games)
 		show_board(irc, channel, game)
 	end, false, "string", "+int...")
-	irc:add_command("mnkpq", "mnkpq", function(irc, state, channel, xy_list)
+	
+	local function mnkpq(irc, state, channel, xy_list)
 		local games = assert(irc.linda:get("mnkpq.games"), "No games taking place")
 		local game, game_i
 		local nick = irc:lower(state.nick)
@@ -187,7 +188,23 @@ return function(irc)
 		irc.linda:set("mnkpq.games", games)
 
 		return ret
-	end, false)
+	end
+	
+	irc:add_hook("mnkpq", "on_cmd_privmsg", function(irc, state, channel, xy_list)
+		msg = utils.strip(msg)
+		for x_y in xy_list:gmatch("[^,]+") do
+			x_y = utils.strip(x_y)
+			if not (tonumber(x_y) or x_y:match("^(%d+)%s+(%d+)$")) then
+				return
+			end
+		end
+		local success, result = pcall(mnkpq, irc, state, channel, xy_list)
+		if sucess then
+			irc:privmsg(channel, result)
+		end
+	end)
+	
+	irc:add_command("mnkpq", "mnkpq", mnkpq, false)
 	irc:add_command("mnkpq", "mnkpq_stop", function(irc, state, channel, msg)
 		channel = irc:lower(channel)
 		nick = irc:lower(state.nick)
