@@ -152,7 +152,7 @@ return function(irc)
 			local x, y
 
 			if game.gravity then
-				x = assert(tonumber(x_y, "Invalid number"))
+				x = assert(tonumber(x_y), "Invalid number")
 				assert(x >= 1 and x <= game.m, "Invalid number: range 1-" .. game.m)
 				for _y = game.n, 1, -1 do
 					if game.board[_y]:sub(x, x) == "-" then
