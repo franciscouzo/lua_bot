@@ -191,7 +191,7 @@ return function(irc)
 	end
 	
 	irc:add_hook("mnkpq", "on_cmd_privmsg", function(irc, state, channel, xy_list)
-		msg = utils.strip(msg)
+		msg = utils.strip(xy_list)
 		for x_y in xy_list:gmatch("[^,]+") do
 			x_y = utils.strip(x_y)
 			if not (tonumber(x_y) or x_y:match("^(%d+)%s+(%d+)$")) then
