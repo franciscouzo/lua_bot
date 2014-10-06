@@ -147,13 +147,13 @@ return function(irc)
 		local player = game.players[1] == whos_turn(game) and "O" or "X"
 		for x_y in xy_list:gmatch("[^,]+") do
 			assert(irc:lower(state.nick) == whos_turn(game), "It's not your turn")
-			assert(x >= 1 and x <= game.m, "Invalid number: range 1-" .. game.m)
 
 			x_y = utils.strip(x_y)
 			local x, y
 
 			if game.gravity then
 				x = assert(tonumber(x_y, "Invalid number"))
+				assert(x >= 1 and x <= game.m, "Invalid number: range 1-" .. game.m)
 				for _y = game.n, 1, -1 do
 					if game.board[_y]:sub(x, x) == "-" then
 						y = _y
@@ -165,9 +165,11 @@ return function(irc)
 				x, y = x_y:match("^(%d+)%s+(%d+)$")
 				x = assert(tonumber(x), "Invalid number")
 				y = assert(tonumber(y), "Invalid number")
+				assert(x >= 1 and x <= game.m, "Invalid number: range 1-" .. game.m)
 				assert(y >= 1 and y <= game.n, "Invalid number: range 1-" .. game.n)
 				assert(game.board[y]:sub(x, x) == "-", "That cell is already occupied")
 			end
+
 			game.board[y] = game.board[y]:sub(1, x - 1) .. player .. game.board[y]:sub(x + 1)
 			game.turn = game.turn + 1
 		end
