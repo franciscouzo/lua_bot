@@ -199,7 +199,7 @@ return function(irc)
 			end
 		end
 		local success, result = pcall(mnkpq, irc, state, channel, xy_list)
-		if sucess then
+		if success then
 			irc:privmsg(channel, result)
 		end
 	end)
