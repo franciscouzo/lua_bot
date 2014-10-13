@@ -27,8 +27,8 @@ local handlers = {
 
 				return ("%s | %i view%s, %i like%s, %i dislike%s"):format(
 					title,
-					views,    views    == 1 and "" or "s"
-					likes,    likes    == 1 and "" or "s"
+					views,    views    == 1 and "" or "s",
+					likes,    likes    == 1 and "" or "s",
 					dislikes, dislikes == 1 and "" or "s")
 			end)
 			if success then
