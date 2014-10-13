@@ -122,13 +122,9 @@ local function addchar(byte, font, output, kern, smush)
 
 	for i = 1, font.height do
 		if smush and output[i] ~= "" and byte ~= (" "):byte() then
-			local lhc = output[i]:sub(-1)
-			local rhc = c[i]:sub(1, 1)
-			output[i] = output[i]:sub(1, -2)
-			if rhc ~= " " then
-				output[i] = output[i] .. rhc
-			else
-				output[i] = output[i] .. lhc
+			local first_char = c[i]:sub(1, 1)
+			if first_char ~= " " then
+				output[i] = output[i]:sub(1, -2) .. first_char
 			end
 			output[i] = output[i] .. c[i]:sub(2)
 		else
