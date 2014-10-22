@@ -27,7 +27,7 @@ return function(irc)
 		irc.linda:set("lastfm.users", users)
 	end, false)
 
-	irc:add_command("lastfm", "nowplaying", function(irc, state, channel, msg)
+	local function nowplaying(irc, state, channel, msg)
 		local api_key = irc:get_config("lastfm_api_key", channel)
 		assert(api_key, "No api key set up")
 
@@ -57,11 +57,26 @@ return function(irc)
 
 		local artist = track.artist["#text"]
 		if track["@attr"] then
-			return ("%s is now playing: %s - %s"):format(user, artist, track.name)
+			return user, artist, track.name
 		else
-			return ("Last song played by %s: %s - %s (%s)"):format(user, artist, track.name, track.date["#text"])
+			return user, artist, track.name, track.date["#text"]
+		end
+	end
+
+	irc:add_command("lastfm", "nowplaying", function(...)
+		local user, artist, track_name, date = nowplaying(...)
+		if date then
+			return ("Last song played by %s: %s - %s (%s)"):format(user, artist, track_name, date)
+		else
+			return ("%s is now playing: %s - %s"):format(user, artist, track_name)
 		end
 	end, true)
+
+	irc:add_command("lastfm", "nowplaying_r", function(...)
+		local _, artist, track_name = nowplaying(...)
+		return ("%s - %s"):format(artist, track_name)
+	end, true)
+
 	irc:add_command("lastfm", "topartists", function(irc, state, channel, msg)
 		msg = utils.strip(msg)
 		local users = irc.linda:get("lastfm.users")
