@@ -169,7 +169,6 @@ return function(irc)
 	end
 	
 	irc:add_hook("hooks", "on_rpl_saslmechs", function(irc, state, nick, mechanisms)
-		local args = {...}
 		irc.sasl_authentication_mechanisms = {}
 		for mechanism in ipairs(utils.split(mechanisms, ",")) do
 			irc.sasl_authentication_mechanisms[mechanism] = true
