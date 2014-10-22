@@ -228,8 +228,18 @@ function irc:run_line(line)
 		return
 	end
 
+	local time
+	if tags.time then
+		local year, month, day, hour, minute, second, millisecond = tags.time:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)%.(%d+)Z")
+		if year then
+			time = os.time({year = year, month = month, day = day, hour = hour, min = minute, sec = second}) + millisecond / 1000
+		end
+	else
+		time = os.time()
+	end
+
 	local nick, user, host = prefix:match("(.+)!(.+)@(.+)")
-	local state = {tags = tags, prefix = prefix, nick = nick, user = user, host = host, line = line}
+	local state = {tags = tags, prefix = prefix, nick = nick, user = user, host = host, line = line, time = time}
 
 	if (nick and user and host) then
 		if args[1] and self:lower(args[1]) == self:lower(self.nick) then

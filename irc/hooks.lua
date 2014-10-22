@@ -56,20 +56,13 @@ return function(irc)
 			irc.self_prefix = state.prefix -- to know at what length to wrap lines
 			-- also useful for the self-message capability
 		end
-		local time
-		if state.tags.time then
-			local year, month, day, hour, minute, second, millisecond = state.tags.time:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)%.(%d+)Z")
-			if year then
-				time = os.time({year = year, month = month, day = day, hour = hour, min = minute, sec = second})
-			end
-		end
-		
+
 		if state.nick and state.user and state.host then
 			irc:update_user(state.nick, "user", state.user)
 			irc:update_user(state.nick, "host", state.host)
 		end
 		
-		local date = os.date("%X", time)
+		local date = os.date("%X", state.time)
 		print(("[%s] server: %s"):format(date, state.line))
 	end)
 	irc:add_hook("hooks", "on_send", function(irc, line, command, ...)
