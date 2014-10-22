@@ -23,7 +23,7 @@ return function(irc)
 
 		irc.capabilities_in_common = {}
 		irc.received_capabilities = {}
-		irc.sasl_authentication_methods = {}
+		irc.sasl_authentication_mechanisms = {}
 
 		irc:send("CAP", "LS", "302")
 		if irc.config.pass then
@@ -118,17 +118,19 @@ return function(irc)
 			if finish_server_capabilities then
 				if irc.capabilities_in_common.sasl then
 					-- parse ircv3.2 sasl reply
-					irc.sasl_authentication_methods = {}
+					irc.sasl_authentication_mechanisms = {}
 					if irc.received_capabilities.sasl == "" then
-						irc.sasl_authentication_methods.PLAIN = true
+						irc.sasl_authentication_mechanisms.PLAIN = true
 					else
-						for i, method in ipairs(utils.split(irc.received_capabilities.sasl, " ")) do
-							irc.sasl_authentication_methods[method] = true
+						for i, mechanism in ipairs(utils.split(irc.received_capabilities.sasl, ",")) do
+							irc.sasl_authentication_mechanisms[mechanism] = true
 						end
 					end
 
-					if irc.sasl_authentication_methods.PLAIN then
+					if irc.sasl_authentication_mechanisms.PLAIN then
 						irc:send("AUTHENTICATE", "PLAIN")
+					else
+						irc:send("CAP", "END")
 					end
 				else
 					irc:send("CAP", "END")
@@ -144,11 +146,11 @@ return function(irc)
 			irc:send("CAP", "END")
 		end)
 	end
-	local function authenticate(irc, mode)
+	local function authenticate(irc, mechanism)
 		if not irc.config.sasl_pass then
 			irc:send("AUTHENTICATE", "*")
 			return true
-		elseif mode == "PLAIN" then
+		elseif mechanism == "PLAIN" then
 			local mime = require("mime")
 			local auth = irc.nick .. "\000" .. irc.nick .. "\000" .. irc.config.sasl_pass
 			auth = mime.b64(auth)
@@ -160,32 +162,31 @@ return function(irc)
 			end
 
 			irc:send("AUTHENTICATE", #auth >= 1 and auth or "+")
+			return true -- success
 		else
-			-- unknown mode
-			-- irc:send("AUTHENTICATE", "*")
-			-- return true
+			-- unknown mechanism
 		end
 	end
 	
-	irc:add_hook("hooks", "on_rpl_saslmechs", function(irc, state, nick, ...)
+	irc:add_hook("hooks", "on_rpl_saslmechs", function(irc, state, nick, mechanisms)
 		local args = {...}
-		for i = 1, #args - 1 do
-			local mode = args[i]
-			irc.sasl_authentication_methods[mode] = true
+		irc.sasl_authentication_mechanisms = {}
+		for mechanism in ipairs(utils.split(mechanisms, ",")) do
+			irc.sasl_authentication_mechanisms[mechanism] = true
 		end
-		for mode in pairs(irc.sasl_authentication_methods) do
-			if authenticate(irc, mode) then
+		for mechanism in pairs(irc.sasl_authentication_mechanisms) do
+			if authenticate(irc, mechanism) then
 				return
 			end
 		end
 		irc:send("AUTHENTICATE", "*")
-		-- unknown authentication method
+		-- unknown authentication mechanism
 	end)
 
-	irc:add_hook("hooks", "on_cmd_authenticate", function(irc, state, mode)
-		if mode == "+" then
-			for mode in pairs(irc.sasl_authentication_methods) do
-				if authenticate(irc, mode) then
+	irc:add_hook("hooks", "on_cmd_authenticate", function(irc, state, mechanism)
+		if mechanism == "+" then
+			for mechanism in pairs(irc.sasl_authentication_mechanisms) do
+				if authenticate(irc, mechanism) then
 					return
 				end
 			end
