@@ -23,7 +23,12 @@ return {
 	servers = {
 		"127.0.0.1"
 	},
-	--ssl = true,
+	--[[ssl = {
+		protocol = "tlsv1_2",
+		capath = "/etc/ssl/certs",
+		verify = {"peer", "fail_if_no_peer_cert"},
+		exit_on_invalid_cert = false -- will jump to next server
+	},]]
 	--pass = ...,
 	--sasl_pass = ...,
 	--nickserv_pass = ...,

@@ -13,7 +13,7 @@
 local lanes = require("lanes").configure()
 
 local socket = require("socket")
-local _, ssl = pcall(require, "ssl")
+local ssl_success, ssl = pcall(require, "ssl")
 
 local replies = require("irc.replies")
 local utils = require("irc.utils")
@@ -47,6 +47,8 @@ end
 
 function irc:new(config)
 	self.config = config
+
+	assert(not (self.config.ssl and not ssl_success), "config.ssl is true, but luasec is not installed")
 
 	self.nick = assert(config.nick, "Invalid nick")
 	self.username = config.username or self.nick
@@ -109,30 +111,31 @@ function irc:connect()
 	assert(#servers > 0, "Server list is empty")
 	while true do
 		for _, server in ipairs(servers) do
-			local port = 6667
+			local port = self.config.ssl and 6697 or 6667
 			if type(server) == "table" then
 				server, port = unpack(server)
 			end
 
-			--local sock = socket.tcp()
 			local status, sock = pcall(socket.connect, server, port)
-			if status and sock then
-				--[[if self.config.ssl then
-					sock = ssl:wrap(sock, {
-						mode = "client",
-						protocol = "tlsv1",
-						key = "/etc/certs/clientkey.pem",
-						certificate = "/etc/certs/client.pem",
-						cafile = "/etc/certs/CA.pem",
-						verify = "peer",
-						options = "all"
-					})
-					sock:dohandshake()
-				end]]
-				sock:settimeout(0)
-				self.connected = true
-				return sock
+			if not (status and sock) then
+				return
 			end
+
+			if self.config.ssl then
+				local params = utils.deepcopy(self.config.ssl)
+				params.mode = "client"
+				sock = ssl.wrap(sock, params)
+
+				local success, err = sock:dohandshake()
+
+				if self.config.ssl.exit_on_invalid_cert do
+					assert(success, err)
+				end
+			end
+
+			sock:settimeout(0)
+			self.connected = true
+			return sock
 		end
 	end
 end
@@ -154,7 +157,9 @@ end
 function irc:true_main_loop()
 	self.running = true
 	while self.running do
-		self.socket = self:connect()
+		repeat
+			self.socket = self:connect()
+		until self.socket
 
 		self.socket:setoption("tcp-nodelay", true)
 		self.socket:setoption("keepalive", true)
