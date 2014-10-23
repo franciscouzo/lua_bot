@@ -566,7 +566,6 @@ function irc:format_msg(command, ...)
 	local args = {...}
 	local message = ""
 	if type(args[#args]) == "table" then
-		message = "@"
 		local tags = table.remove(args)
 		local tags_formatted = {}
 		for tag, value in pairs(tags) do
