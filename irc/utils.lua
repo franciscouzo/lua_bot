@@ -14,8 +14,10 @@ function utils:rstrip()
 	return (self:match("(.-)%s*$"))
 end
 
-function utils:escape_pattern()
-    return (self:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", function(c) return "%" .. c end))
+function utils.escape_pattern(s)
+    s = s:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1")
+	s = s:gsub("%z", "%%z")
+	return s
 end
 
 function utils.gisub(s, pat, ...)
