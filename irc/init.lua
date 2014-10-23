@@ -124,16 +124,20 @@ function irc:connect()
 			if self.config.ssl then
 				local params = utils.deepcopy(self.config.ssl)
 				params.mode = "client"
-				sock = ssl.wrap(sock, params)
+
+				local sock_, err = ssl.wrap(sock, params)
+				sock = sock_
+
+				if not sock then
+					(self.config.ssl.exit_on_error and error or print)(err)
+					return
+				end
 
 				local success, err = sock:dohandshake()
 
 				if not success then
-					if self.config.ssl.exit_on_invalid_cert then
-						assert(success, err)
-					else
-						return
-					end
+					(self.config.ssl.exit_on_error and error or print)(err)
+					return
 				end
 			end
 

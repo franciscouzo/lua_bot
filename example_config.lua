@@ -27,7 +27,7 @@ return {
 		protocol = "tlsv1_2",
 		capath = "/etc/ssl/certs",
 		verify = {"peer", "fail_if_no_peer_cert"},
-		exit_on_invalid_cert = false -- will jump to next server
+		exit_on_error = false -- will jump to next server
 	},]]
 	--pass = ...,
 	--sasl_pass = ...,
