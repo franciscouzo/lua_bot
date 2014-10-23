@@ -123,7 +123,7 @@ function irc:connect()
 
 			sock:setoption("tcp-nodelay", true)
 			sock:setoption("keepalive", true)
-			
+
 			if self.config.ssl then
 				local params = utils.deepcopy(self.config.ssl)
 				params.mode = "client"
