@@ -503,7 +503,7 @@ function irc:parse_modes(channel, modes, user_change)
 	end
 end
 
-local tag_escapes = {[":"] = ";", ["s"] = " ", ["0"] = "\000", ["r"] = "\r", ["n"] = "\n"}
+local tag_escapes = {[":"] = ";", ["s"] = " ", ["0"] = "\000", ["\\"] = "\\", ["r"] = "\r", ["n"] = "\n"}
 
 function irc:parse_line(s)
 	local tags = {}
@@ -521,8 +521,9 @@ function irc:parse_line(s)
 		tag_list = utils.split(tag_list, ";")
 		for _, tag in ipairs(tag_list) do
 			local tag, value = unpack(utils.split(tag, "=", 1))
+			value = value or true
 			if tag and value then
-				value = value:gsub("\\(.)", tag_escapes)
+				value = value == true or value:gsub("\\(.)", tag_escapes)
 				tags[tag] = value
 			end
 		end
@@ -545,9 +546,25 @@ function irc:parse_line(s)
 	return tags, prefix, command, args
 end
 
+local tag_format_escapes = {[";"] = "\\:", [" "] = "\s", ["\000"] = "\\0", ["\\"] = "\\\\", ["\r"] = "\\r", ["\n"] = "\\n"}
+local tag_format_escapes_pattern = "[; %z\\\r\n]"
+
 function irc:format_msg(command, ...)
-	local message, len = command, select("#", ...)
-	for i, v in ipairs({...}) do
+	local args = {...}
+	local message = ""
+	if type(args[#args]) == "table" then
+		message = "@"
+		local tags = table.remove(args)
+		local tags_formatted = {}
+		for tag, value in pairs(tags) do
+			table.insert(tags_formatted, tag .. "=" .. value:gsub(tag_format_escapes_pattern, tag_format_escapes))
+		end
+		message = "@" .. table.concat(tags_formatted, ";") .. " "
+	end
+
+	message = message .. command
+	local len = #args
+	for i, v in ipairs(args) do
 		if i == len and (v:find(" ") or v:find(":")) then
 			v = ":" .. v
 		end
