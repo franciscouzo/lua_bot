@@ -121,6 +121,9 @@ function irc:connect()
 				return
 			end
 
+			sock:setoption("tcp-nodelay", true)
+			sock:setoption("keepalive", true)
+			
 			if self.config.ssl then
 				local params = utils.deepcopy(self.config.ssl)
 				params.mode = "client"
@@ -168,9 +171,6 @@ function irc:true_main_loop()
 		repeat
 			self.socket = self:connect()
 		until self.socket
-
-		self.socket:setoption("tcp-nodelay", true)
-		self.socket:setoption("keepalive", true)
 
 		self:call_hook("on_connect")
 
