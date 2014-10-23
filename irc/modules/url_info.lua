@@ -35,6 +35,9 @@ local handlers = {
 				return title
 			end
 		end
+	end,
+	["hastebin.com"] = function()
+		return "" -- empty string evaluates to true, but irc:privmsg ignored empty strings
 	end
 	--["twitter.com"] = function(url, s)
 		--if url:match()
