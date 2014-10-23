@@ -65,7 +65,7 @@ return function(irc)
 		local date = os.date("%X", state.time)
 		print(("[%s] server: %s"):format(date, state.line))
 	end)
-	irc:add_hook("hooks", "on_send", function(irc, line, command, ...)
+	irc:add_hook("hooks", "on_send", function(irc, line, command)
 		if command ~= "PONG" and command ~= "PING" then
 			print(("[%s] client: %s"):format(os.date("%X"), line))
 		end
