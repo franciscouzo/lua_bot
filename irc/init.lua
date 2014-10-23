@@ -129,7 +129,7 @@ function irc:connect()
 				local success, err = sock:dohandshake()
 
 				if not success then
-					if self.config.ssl.exit_on_invalid_cert do
+					if self.config.ssl.exit_on_invalid_cert then
 						assert(success, err)
 					else
 						return
