@@ -60,6 +60,9 @@ return function(irc)
 		if state.nick and state.user and state.host then
 			irc:update_user(state.nick, "user", state.user)
 			irc:update_user(state.nick, "host", state.host)
+			if irc.capabilities_in_common["account-tag"] then
+				irc:update_user(state.nick, "account", state.tags.account ~= nil and state.tags.account or nil)
+			end
 		end
 		
 		local date = os.date("%X", state.time)
@@ -102,7 +105,7 @@ return function(irc)
 				irc.received_capabilities[capability] = value
 			end
 			irc:send("CAP", "REQ", table.concat(capabilities_in_common, " "))
-		elseif subcommand == "ACK" then
+		elseif subcommand == "ACK" or subcommand == "NEW" then
 			for _, capability in ipairs(utils.split(server_capabilities, " ")) do
 				local modifiers, capability = parse_capability(capability)
 				irc.capabilities_in_common[capability] = not modifiers["-"] and true or nil
@@ -348,6 +351,25 @@ return function(irc)
 			irc.channels[irc:lower(channel)].users[irc:lower(whom)] = nil
 		end
 	end)
+
+	local function parse_ctcp(irc, state, channel, message)
+		if not ((message:sub(1, 1) == "\001" and message:sub(-1) == "\001") or state.tags.intent) then
+			return
+		end
+
+		local ctcp_command, ctcp_message
+
+		if state.tags.intent then
+			ctcp_command = state.tags.intent
+			ctcp_message = message
+		else
+			ctcp_message = message:sub(2, -2)
+			ctcp_command, ctcp_message = unpack(utils.split(message, " ", 1))
+		end
+
+		return ctcp_command or "", ctcp_message or ""
+	end
+
 	irc:add_hook("hooks", "on_cmd_privmsg", function(irc, state, channel, message)
 		if state.prefix == irc.self_prefix then
 			-- self-message
@@ -355,16 +377,12 @@ return function(irc)
 			irc:call_hook("on_send_privmsg", formatted, channel, message)
 			return
 		end
-		if message:sub(1, 1) == "\001" and message:sub(-1) == "\001" then
-			message = message:sub(2, -2)
-			local ctcp, message = unpack(utils.split(message, " ", 1))
-			message = message or ""
-			if ctcp then
-				if not irc:call_hook("on_privmsg_ctcp", ctcp:upper(), state, channel, message) then
-					irc:call_hook("on_privmsg_ctcp_" .. ctcp:lower(), state, channel, message)
-				end
+		local ctcp_command, ctcp_message = parse_ctcp(irc, state, channel, message)
+		if ctcp_command then
+			if not irc:call_hook("on_privmsg_ctcp", ctcp_command:upper(), state, channel, ctcp_message) then
+				irc:call_hook("on_privmsg_ctcp_" .. ctcp_command:lower(), state, channel, ctcp_message)
 			end
-			return -- do it in the same because we don't want normal commands to receive ctcp messages
+			return -- we don't want normal commands receiving ctcp messages
 		end
 		for _, prefix in ipairs(irc:get_config("prefixes", channel)) do
 			prefix = prefix:format(irc.nick)
@@ -391,14 +409,10 @@ return function(irc)
 			irc:call_hook("on_send_notice", formatted, channel, message)
 			return
 		end
-		if message:sub(1, 1) == "\001" and message:sub(-1) == "\001" then
-			message = message:sub(2, -2)
-			local ctcp, message = unpack(utils.split(message, " ", 1))
-			message = message or ""
-			if ctcp then
-				if not irc:call_hook("on_notice_ctcp", ctcp:upper(), state, channel, message) then
-					irc:call_hook("on_notice_ctcp_" .. ctcp:lower(), state, channel, message)
-				end
+		local ctcp_command, ctcp_message = parse_ctcp(irc, state, channel, message)
+		if ctcp_command then
+			if not irc:call_hook("on_notice_ctcp", ctcp_command:upper(), state, channel, ctcp_message) then
+				irc:call_hook("on_notice_ctcp_" .. ctcp_command:lower(), state, channel, ctcp_message)
 			end
 		end
 	end)

@@ -23,9 +23,10 @@ local irc = {
 	supported_capabilities = {
 		["multi-prefix"] = true, ["sasl"] = true, -- base ircv3.1
 		["account-notify"] = true, ["away-notify"] = true, ["extended-join"] = true, --[tls] = true -- optional ircv3.1
-		--["intents"] = true, ["monitor"] = true, -- base ircv3.2
-		["server-time"] = true, --[[[batch] = true,]] ["userhost-in-names"] = true, ["chghost"] = true, -- optional ircv3.2
-		["self-message"] = true, ["invite-notify"] = true
+		--["intents"] = true, -- base ircv3.2
+		["account-tag"] = true, --[[["batch"] = true,]] ["cap-notify"] = true, -- optional ircv3.2
+		["chghost"] = true, ["invite-notify"] = true, ["userhost-in-names"] = true,
+		["self-message"] = true, ["server-time"] = true,
 		
 	},
 	isupport_default = {
