@@ -1,4 +1,5 @@
 local utils = require("irc.utils")
+local mirc_to_ansi = require("irc.mirc_to_ansi")
 
 return function(irc)
 	irc.lag = 1
@@ -66,11 +67,11 @@ return function(irc)
 		end
 		
 		local date = os.date("%X", state.time)
-		print(("[%s] server: %s"):format(date, state.line))
+		print(("[%s] server: %s"):format(date, mirc_to_ansi(state.line)))
 	end)
 	irc:add_hook("hooks", "on_send", function(irc, line, command)
 		if command ~= "PONG" and command ~= "PING" then
-			print(("[%s] client: %s"):format(os.date("%X"), line))
+			print(("[%s] client: %s"):format(os.date("%X"), mirc_to_ansi(line)))
 		end
 	end)
 
