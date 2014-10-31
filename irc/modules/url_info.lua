@@ -6,7 +6,7 @@ local default_handler = function(url, s)
 	if title then
 		title = title:gsub("%s+", " ")
 		title = utils.strip(title)
-		return "Title: " .. html.unescape(title)
+		return html.unescape(title)
 	end
 end
 
@@ -37,35 +37,48 @@ local handlers = {
 		end
 	end,
 	["hastebin.com"] = function()
-		return "" -- empty string evaluates to true, but irc:privmsg ignored empty strings
+		return "" -- empty string evaluates to true, but irc:privmsg ignores empty strings
 	end
 	--["twitter.com"] = function(url, s)
 		--if url:match()
 	--end
 }
 
+local function url_info(url)
+	local http = require("socket.http")
+	http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
+	local https = require("ssl.https")
+	local url_parse = require("socket.url").parse
+
+	local parsed = url_parse(url)
+
+	assert(parsed, "Invalid url")
+	assert(parsed.scheme, "Invalid url")
+	assert(parsed.host, "Invalid url")
+	assert(parsed.scheme == "http" or parsed.scheme == "https", "Unsupported scheme")
+
+	local t = {}
+	local request = ({http=http, https=https})[parsed.scheme].request
+	pcall(request, {
+		url = url,
+		sink = utils.limited_sink(t, 1024 * 1024) -- 1MiB should be enough
+	})
+	local s = table.concat(t)
+	local handler = handlers[parsed.host] or default_handler
+	local url_info = handler(url, s) or default_handler(url, s)
+
+	return url_info
+end
+
 return function(irc)
+	irc:add_command("url_info", "url_info", function(irc, state, channel, url)
+		local url_info = assert(url_info(url), "Title not found")
+		return url_info
+	end, true)
+
 	irc:add_hook("url_info", "on_non_cmd_privmsg", function(irc, state, channel, msg)
-		local http = require("socket.http")
-		http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
-		local https = require("ssl.https")
-		local url = require("socket.url")
-		for uri in msg:gmatch("https?://%S+") do
-			local parsed = url.parse(uri)
-			if parsed and parsed.scheme then -- idk if it can return nil
-				local t = {}
-				local request = ({http=http, https=https})[parsed.scheme].request
-				local success, _, response_code = pcall(request, {
-					url = uri,
-					sink = utils.limited_sink(t, 1024 * 1024) -- 1MiB should be enough
-				})
-				local s = table.concat(t)
-				local handler = handlers[parsed.host] or default_handler
-				local url_info = handler(uri, s) or default_handler(url, s)
-				if url_info then
-					irc:privmsg(channel, url_info)
-				end
-			end
+		for url in msg:gmatch("https?://%S+") do
+			irc:privmsg(channel, url_info(url))
 		end
-	end)
+	end, true)
 end
