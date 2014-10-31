@@ -16,24 +16,25 @@ local handlers = {
 		if url:match("^https?://www.youtube.com/watch%?v=.+") then
 			local success, title = pcall(function()
 				local title = s:match('<meta name="title" content="(.-)">')
-				local views = s:match('<div class="watch%-view%-count" >(.-)</div>')
-				local likes, dislikes = s:match('<span class="yt%-uix%-button%-content">([,%d%s]-)</span>.+<span class="yt%-uix%-button%-content">([,%d%s]-)</span>')
+				local views_s = s:match('<div class="watch%-view%-count" >(.-)</div>')
+				local likes_s, dislikes_s = s:match('<span class="yt%-uix%-button%-content">([,%d%s]-)</span>.+<span class="yt%-uix%-button%-content">([,%d%s]-)</span>')
 				local author = s:match('"author": "(.-)"')
 				local length = s:match('"length_seconds":%s*"(%d-)"')
 
 				title = html.unescape(title)
 
-				views    = tonumber((views:match("([,%d%s]+)"):gsub(",", "")))
-				likes    = tonumber((likes:gsub(",", "")))
-				dislikes = tonumber((dislikes:gsub(",", "")))
+				views    = tonumber((views_s:match("([,%d%s]+)"):gsub(",", "")))
+				likes    = tonumber((likes_s:gsub(",", "")))
+				dislikes = tonumber((dislikes_s:gsub(",", "")))
 				length   = irc:run_command(state, channel, "format_seconds " .. length) or (length .. " seconds")
 
-				return ("%s | %s | %s | %i view%s, %i like%s, %i dislike%s"):format(
+				return ("%s | %s | %s | %s view%s, %s like%s, %s dislike%s"):format(
 					title, author, length,
-					views,    views    == 1 and "" or "s",
-					likes,    likes    == 1 and "" or "s",
-					dislikes, dislikes == 1 and "" or "s")
+					views_s,    views    == 1 and "" or "s",
+					likes_s,    likes    == 1 and "" or "s",
+					dislikes_s, dislikes == 1 and "" or "s")
 			end)
+			print(title)
 			if success then
 				return title
 			end
