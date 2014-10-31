@@ -6,7 +6,9 @@ local mirc_to_ansi256 = function(c, is_bg)
 		(is_bg and 49 or 39)) .. "m"
 end
 
-return function(s)
+local ansi = {}
+
+function ansi.mirc_to_ansi(s)
 	local b, u, n = 0, 0, 0
 	return tostring(s):gsub("\2", function()
 		b = b + 1
@@ -28,3 +30,27 @@ return function(s)
 		return mirc_to_ansi256(-1, true) .. mirc_to_ansi256(-1)
 	end) .. "\27[0m"
 end
+
+function ansi.strip(s)
+	--((\u001b\[)|\u009b)(([0-9]{1,3})?((;[0-9]{0,3})*)?[A-M|f-m])|\u001b[A-M]
+	local i, l = 1, #s
+	local out = ""
+	while i <= l do
+		local escape = s:match("^\27%[", i) or s:match("^\155", i)
+		if escape then
+			i = i + #escape
+			--i = i + #(s:match("^%d%d?%d?"), i)
+			i = i + #(s:match("^[;%d]+", i) or "")
+			i = i + #(s:match("^[A-Mf-m]", i) or "")
+		elseif s:match("^\27[A-M]", i) then
+			i = i + 2
+		else
+			out = out .. s:sub(i, i)
+			i = i + 1
+		end
+	end
+
+	return out
+end
+
+return ansi

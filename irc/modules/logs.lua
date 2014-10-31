@@ -1,3 +1,5 @@
+local ansi = require("irc.ansi")
+
 local function log(irc, state, channel, line)
 	if not irc:get_config("log", channel) then
 		return
@@ -8,6 +10,8 @@ local function log(irc, state, channel, line)
 	if not file then
 		return
 	end
+
+	line = ansi.strip(line)
 	line = irc:strip_color(line)
 	
 	local time
