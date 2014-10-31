@@ -1,7 +1,7 @@
 local html = require("irc.html")
 local utils = require("irc.utils")
 
-local default_handler = function(url, s)
+local default_handler = function(irc, state, channel, url, s)
 	local title = s:match("<[Tt][Ii][Tt][Ll][Ee]>([^<]*)<")
 	if title then
 		title = title:gsub("%s+", " ")
@@ -12,21 +12,24 @@ end
 
 local handlers = {
 	-- TODO, add more handlers
-	["www.youtube.com"] = function(url, s)
+	["www.youtube.com"] = function(irc, state, channel, url, s)
 		if url:match("^https?://www.youtube.com/watch%?v=.+") then
 			local success, title = pcall(function()
 				local title = s:match('<meta name="title" content="(.-)">')
 				local views = s:match('<div class="watch%-view%-count" >(.-)</div>')
 				local likes, dislikes = s:match('<span class="yt%-uix%-button%-content">([,%d%s]-)</span>.+<span class="yt%-uix%-button%-content">([,%d%s]-)</span>')
+				local author = s:match('"author": "(.-)"')
+				local length = s:match('"length_seconds":%s*"(%d-)"')
 
 				title = html.unescape(title)
 
 				views    = tonumber((views:match("([,%d%s]+)"):gsub(",", "")))
 				likes    = tonumber((likes:gsub(",", "")))
 				dislikes = tonumber((dislikes:gsub(",", "")))
+				length   = irc:run_command(state, channel, "format_seconds " .. length) or (length .. " seconds")
 
-				return ("%s | %i view%s, %i like%s, %i dislike%s"):format(
-					title,
+				return ("%s | %s | %s | %i view%s, %i like%s, %i dislike%s"):format(
+					title, author, length,
 					views,    views    == 1 and "" or "s",
 					likes,    likes    == 1 and "" or "s",
 					dislikes, dislikes == 1 and "" or "s")
@@ -44,7 +47,7 @@ local handlers = {
 	--end
 }
 
-local function url_info(url)
+local function url_info(irc, state, channel, url)
 	local http = require("socket.http")
 	http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
 	local https = require("ssl.https")
@@ -57,6 +60,8 @@ local function url_info(url)
 	assert(parsed.host, "Invalid url")
 	assert(parsed.scheme == "http" or parsed.scheme == "https", "Unsupported scheme")
 
+	url = url:gsub("#.*", "") -- stupid socket.http, it sends the fragment
+
 	local t = {}
 	local request = ({http=http, https=https})[parsed.scheme].request
 	pcall(request, {
@@ -65,20 +70,20 @@ local function url_info(url)
 	})
 	local s = table.concat(t)
 	local handler = handlers[parsed.host] or default_handler
-	local url_info = handler(url, s) or default_handler(url, s)
+	local url_info = handler(irc, state, channel, url, s) or default_handler(irc, state, channel, url, s)
 
 	return url_info
 end
 
 return function(irc)
 	irc:add_command("url_info", "url_info", function(irc, state, channel, url)
-		local url_info = assert(url_info(url), "Title not found")
+		local url_info = assert(url_info(irc, state, channel, url), "Title not found")
 		return url_info
 	end, true)
 
 	irc:add_hook("url_info", "on_non_cmd_privmsg", function(irc, state, channel, msg)
 		for url in msg:gmatch("https?://%S+") do
-			irc:privmsg(channel, url_info(url))
+			irc:privmsg(channel, url_info(irc, state, channel, url))
 		end
 	end, true)
 end
