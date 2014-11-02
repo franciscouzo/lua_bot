@@ -11,7 +11,7 @@ return function(irc)
 	local double_border_chars = {' ', ' ', ' ', '╔', ' ', '═', '╗', '╤', ' ', '╚', '║', '╟', '╝', '╧', '╢', ' '}
 
 	irc:add_command("maze", "maze", function(irc, state, channel, width, height, char_type, double_borders)
-		assert(width  >= 5 and width  <= 80, "invalid width")
+		assert(width  >= 5 and width  <= 70, "invalid width")
 		assert(height >= 5 and height <= 30, "invalid height")
 
 		char_type = char_type or "square"
