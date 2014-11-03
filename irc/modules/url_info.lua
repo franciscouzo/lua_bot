@@ -21,7 +21,12 @@ local handlers = {
 				local author = s:match('"author": "(.-)"')
 				local length = s:match('"length_seconds":%s*"(%d-)"')
 
-				title = html.unescape(title)
+				title      = html.unescape(utils.strip(title))
+				views_s    = utils.strip(views_s)
+				likes_s    = utils.strip(likes_s)
+				dislikes_s = utils.strip(dislikes_s)
+				author     = utils.strip(author)
+				length     = utils.strip(length)
 
 				views    = tonumber((views_s:match("([,%d%s]+)"):gsub(",", "")))
 				likes    = tonumber((likes_s:gsub(",", "")))
