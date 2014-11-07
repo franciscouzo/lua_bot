@@ -16,15 +16,20 @@ local colors = {
 	{127, 127, 127},
 	{210, 210, 210}
 }
+
+local function lerp(t, a, b)
+	return t * b + (1 - t) * a
+end
+
 local function rgb2irc(rgb)
 	local nearest   = math.huge
 	local nearest_i = -1
 
-	local r, g, b = rgb.red, rgb.green, rgb.blue
+	local r, g, b, a = rgb.red, rgb.green, rgb.blue, rgb.alpha
 
-	--r = (r * (rgb.alpha / 255)) + (255 - rgb.alpha)
-	--g = (g * (rgb.alpha / 255)) + (255 - rgb.alpha)
-	--b = (b * (rgb.alpha / 255)) + (255 - rgb.alpha)
+	r = lerp(1 - a / 255, r, a)
+	g = lerp(1 - a / 255, g, a)
+	b = lerp(1 - a / 255, b, a)
 
 	for i, color in ipairs(colors) do
 		local distance = math.abs(color[1] - r) +
