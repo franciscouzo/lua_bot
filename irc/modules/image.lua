@@ -27,9 +27,9 @@ local function rgb2irc(rgb)
 	--b = (b * (rgb.alpha / 255)) + (255 - rgb.alpha)
 
 	for i, color in ipairs(colors) do
-		local distance = math.abs(color[1] - r) * 0.3 +
-		                 math.abs(color[2] - g) * 0.6 +
-		                 math.abs(color[3] - b) * 0.1
+		local distance = math.abs(color[1] - r) +
+		                 math.abs(color[2] - g) +
+		                 math.abs(color[3] - b) +
 		if distance < nearest then
 			nearest = distance
 			nearest_i = i - 1
