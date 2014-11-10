@@ -22,13 +22,13 @@ local handlers = {
 				local length = s:match('"length_seconds":%s*"(%d-)"')
 
 				title      = html.unescape(utils.strip(title))
-				views_s    = utils.strip(views_s)
+				views_s    = utils.strip(views_s:match("([,%d%s]+)"))
 				likes_s    = utils.strip(likes_s)
 				dislikes_s = utils.strip(dislikes_s)
 				author     = utils.strip(author)
 				length     = utils.strip(length)
 
-				views    = tonumber((views_s:match("([,%d%s]+)"):gsub(",", "")))
+				views    = tonumber((views_s:gsub(",", "")))
 				likes    = tonumber((likes_s:gsub(",", "")))
 				dislikes = tonumber((dislikes_s:gsub(",", "")))
 				length   = irc:run_command(state, channel, "format_seconds " .. length) or (length .. " seconds")
