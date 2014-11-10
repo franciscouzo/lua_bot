@@ -27,14 +27,14 @@ local function rgb2irc(rgb)
 
 	local r, g, b, a = rgb.red, rgb.green, rgb.blue, rgb.alpha
 
-	r = lerp(1 - a / 255, r, a)
-	g = lerp(1 - a / 255, g, a)
-	b = lerp(1 - a / 255, b, a)
+	--r = lerp(1 - a / 255, r, a)
+	--g = lerp(1 - a / 255, g, a)
+	--b = lerp(1 - a / 255, b, a)
 
 	for i, color in ipairs(colors) do
-		local distance = math.abs(color[1] - r) +
-		                 math.abs(color[2] - g) +
-		                 math.abs(color[3] - b)
+		local distance = math.abs(color[1] - r) * 3 +
+		                 math.abs(color[2] - g) * 6 +
+		                 math.abs(color[3] - b) * 1
 		if distance < nearest then
 			nearest = distance
 			nearest_i = i - 1
