@@ -146,7 +146,7 @@ return function(irc)
 				local i = (irc_pixels[1] == foreground and 1 or 0) +
 				          (irc_pixels[2] == foreground and 2 or 0) +
 				          (irc_pixels[3] == foreground and 4 or 0) +
-				          (irc_pixels[4] == foreground and 4 or 0)
+				          (irc_pixels[4] == foreground and 8 or 0)
 				local block = blocks[i + 1]
 				table.insert(line, ("\003%i,%i"):format(foreground, background) .. block)
 			end
