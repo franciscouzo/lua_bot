@@ -239,12 +239,13 @@ return function(irc)
 		return shorten or uri
 	end, true)
 	irc:add_command("misc", "cryptocoin_price", function(irc, state, channel, cur1, cur2)
-		local http = require("socket.http")
-		local response, response_code = http.request("http://www.cryptocoincharts.info/v2/api/tradingPair/" .. cur1 .. "_" .. cur2)
+		local https = require("ssl.https")
+		local response, response_code = https.request(("https://www.cryptonator.com/api/ticker/%s-%s"):format(cur1, cur2))
 		assert(response_code == 200, "Error requesting page")
 		local obj, pos, err = json.decode(response)
 		assert(not err, err)
-		return obj.price
+		assert(obj.success, obj.error)
+		return obj.ticker.price
 	end, true, "string", "string")
 	irc:add_command("misc", "bitcoin", function(irc, state, channel, msg)
 		return irc:run_command(state, channel, "cryptocoin_price btc usd")
