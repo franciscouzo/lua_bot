@@ -166,10 +166,10 @@ return function(irc)
 		for y = 0, height - 1, 2 do
 			local line = {}
 			for x = 0, width - 1 do
-				local foreground = rgb2irc(image:get_pixel(x, y))
-				local background = rgb2irc(image:get_pixel(x, y + 1))
+				local background = rgb2irc(image:get_pixel(x, y))
+				local foreground = rgb2irc(image:get_pixel(x, y + 1))
 
-				table.insert(line, ("\003%i,%i"):format(background, foreground) .. "▄")
+				table.insert(line, ("\003%i,%i▄"):format(foreground, background))
 			end
 			irc:privmsg(channel, table.concat(line))
 		end
