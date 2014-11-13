@@ -354,21 +354,13 @@ return function(irc)
 	end)
 
 	local function parse_ctcp(irc, state, channel, message)
-		if not ((message:sub(1, 1) == "\001" and message:sub(-1) == "\001") or state.tags.intent) then
-			return
-		end
-
-		local ctcp_command, ctcp_message
-
 		if state.tags.intent then
-			ctcp_command = state.tags.intent
-			ctcp_message = message
-		else
-			ctcp_message = message:sub(2, -2)
-			ctcp_command, ctcp_message = unpack(utils.split(message, " ", 1))
+			return state.tags.intent, message
+		elseif message:sub(1, 1) == "\001" and message:sub(-1) == "\001" then
+			message = message:sub(2, -2)
+			local ctcp_command, ctcp_message = unpack(utils.split(message, " ", 1))
+			return ctcp_command or "", ctcp_message or ""
 		end
-
-		return ctcp_command or "", ctcp_message or ""
 	end
 
 	irc:add_hook("hooks", "on_cmd_privmsg", function(irc, state, channel, message)
