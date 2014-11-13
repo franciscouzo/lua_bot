@@ -115,6 +115,6 @@ return function(irc)
 		irc:ctcp_notice(state.nick, "TIME " .. os.date())
 	end)
 	irc:add_hook("ctcp", "on_privmsg_ctcp_clientinfo", function(irc, state, channel, message)
-		irc:ctcp_notice(state.nick, "CLIENTINFO VERSION CLIENTINFO PING SOURCE ACTION TIME DCC")
+		irc:ctcp_notice(state.nick, "CLIENTINFO ACTION CLIENTINFO DCC PING SOURCE TIME VERSION")
 	end)
 end
