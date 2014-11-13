@@ -8,7 +8,7 @@ return function(irc)
 		file:close()
 	end
 
-	irc:add_hook("factoid", "on_quit", function(irc)
+	irc:add_hook("factoids", "on_quit", function(irc)
 		local file = io.open("data/factoids", "w")
 		if file then
 			file:write(utils.pickle(factoids))
@@ -16,7 +16,7 @@ return function(irc)
 		end
 	end)
 
-	irc:add_hook("factoid", "on_cmd_privmsg", function(irc, state, channel, msg)
+	irc:add_hook("factoids", "on_cmd_privmsg", function(irc, state, channel, msg)
 		msg_no_prefix = msg:match("^%s*" .. utils.escape_pattern(irc.nick) .. "[:,]%s*(.+)%s*")
 
 		local reply = not not msg:find("<reply>")
