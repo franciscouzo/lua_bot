@@ -162,19 +162,20 @@ return function(irc)
 		end, false)
 	end
 	
-	irc:add_command("utils", "kick", function(irc, state, channel, nick)
+	irc:add_command("utils", "kick", function(irc, state, channel, args)
 		channel = irc:lower(channel)
+		local nick, reason = unpack(utils.split(args, " ", 1))
 		nick = irc:lower(nick)
 		assert(irc.channels[channel], "Invalid channel")
 		assert(irc.channels[channel].users[nick], "Invalid nick")
 		assert(nick ~= irc:lower(irc.nick), "Haha... No!")
-		irc:send("KICK", channel, nick)
+		irc:send("KICK", channel, nick, reason)
 	end, false)
-	irc:add_command("utils", "kickall", function(irc, state, channel, msg)
+	irc:add_command("utils", "kickall", function(irc, state, channel, reason)
 		assert(irc.channels[irc:lower(channel)], "Invalid channel")
 		for user in pairs(irc.channels[irc:lower(channel)].users) do
 			if user ~= irc:lower(irc.nick) then
-				irc:send("KICK", channel, user)
+				irc:send("KICK", channel, user, reason)
 			end
 		end
 	end, false)
