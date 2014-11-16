@@ -9,26 +9,43 @@ end
 local ansi = {}
 
 function ansi.mirc_to_ansi(s)
-	local b, u, n = 0, 0, 0
-	return tostring(s):gsub("\2", function()
-		b = b + 1
-		local char = b % 2 == 1 and 1 or 22
+	local bold, inverse, italics, underline = 0, 0, 0, 0
+	s = tostring(s)
+	s = s:gsub("\2", function() -- bold
+		bold = bold + 1
+		local char = bold % 2 == 1 and 1 or 22
 		return "\27[" .. char .. "m"
-	end):gsub("\31", function()
-		u = u + 1
-		local char = u % 2 == 1 and 4 or 24
+	end)
+	s = s:gsub("\15", "\27[0m") -- normal
+	s = s:gsub("\22", function() -- inverse
+		inverse = inverse + 1
+		local char = inverse % 2 == 1 and 7 or 27
 		return "\27[" .. char .. "m"
-	end):gsub("\22", function()
-		n = n + 1
-		local char = n % 2 == 1 and 7 or 27
+	end)
+	s = s:gsub("\29", function() -- italics
+		italics = italics + 1
+		local char = italics % 2 == 1 and 3 or 23
 		return "\27[" .. char .. "m"
-	end):gsub("\3(%d?%d?),(%d%d?)", function(fg, bg)
+	end)
+	s = s:gsub("\31", function() -- underline
+		underline = underline + 1
+		local char = underline % 2 == 1 and 4 or 24
+		return "\27[" .. char .. "m"
+	end)
+
+	s = s:gsub("\3(%d?%d?),(%d%d?)", function(fg, bg) -- color
 		return mirc_to_ansi256(bg, true) .. (fg ~= "" and mirc_to_ansi256(fg) or "")
-	end):gsub("\3(%d%d?)", function(fg)
+	end)
+	s = s:gsub("\3(%d%d?)", function(fg)
 		return mirc_to_ansi256(fg)
-	end):gsub("\3", function()
+	end)
+	s = s:gsub("\3", function()
 		return mirc_to_ansi256(-1, true) .. mirc_to_ansi256(-1)
-	end) .. "\27[0m"
+	end)
+
+	s = s .. "\27[0m"
+
+	return s
 end
 
 function ansi.strip(s)
