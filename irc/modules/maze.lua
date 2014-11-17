@@ -6,7 +6,8 @@ return function(irc)
 		rounded = {' ', '╶', '╷', '╭', '╴', '─', '╮', '┬', '╵', '╰', '│', '├', '╯', '┴', '┤', '┼'},
 		bold    = {' ', '╺', '╻', '┏', '╸', '━', '┓', '┳', '╹', '┗', '┃', '┣', '┛', '┻', '┫', '╋'},
 		cables  = {' ', '╼', '╽', '┏', '╾', '━', '┓', '┳', '╿', '┗', '┃', '┣', '┛', '┻', '┫', '╋'},
-		double  = {' ', '═', '║', '╔', '═', '═', '╗', '╦', '║', '╚', '║', '╠', '╝', '╩', '╣', '╬'}
+		double  = {' ', '═', '║', '╔', '═', '═', '╗', '╦', '║', '╚', '║', '╠', '╝', '╩', '╣', '╬'},
+		blocks  = {'\003,0 ', '\0030,1▄', '\003,1 ', '\003,1 ', '\0030,1▄', '\0030,1▄', '\003,1 ', '\003,1 ', '\0030,1▄', '\0030,1▄', '\003,1 ', '\003,1 ', '\0030,1▄', '\0030,1▄', '\003,1 ', '\003,1 '},
 	}
 	local double_border_chars = {' ', ' ', ' ', '╔', ' ', '═', '╗', '╤', ' ', '╚', '║', '╟', '╝', '╧', '╢', ' '}
 
@@ -120,9 +121,9 @@ return function(irc)
 					(map[x + 1][y].bottom and 1 or 0)
 
 				local _double_borders = double_borders and ((x == 1 or x == width - 1) or (y == 1 or y == height - 1))
-				line[#line + 1] = (_double_borders and double_border_chars or chars)[char + 1]
-				
 				local top_bottom_edges = double_borders and (y == 1 or y == height - 1)
+
+				line[#line + 1] = (_double_borders and double_border_chars or chars)[char + 1]
 				line[#line + 1] = (top_bottom_edges and double_border_chars or chars)[(not map[x + 1][y].bottom) and 1 or 6]
 			end
 			irc:privmsg(channel, table.concat(line))
