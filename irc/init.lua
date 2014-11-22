@@ -19,6 +19,10 @@ local replies = require("irc.replies")
 local utils = require("irc.utils")
 local hooks = require("irc.hooks")
 
+for i = 1, 10 do
+	math.randomseed(os.time() + os.clock() * 1000000 + math.random(2^16))
+end
+
 local irc = {
 	supported_capabilities = {
 		["multi-prefix"] = true, ["sasl"] = true, -- base ircv3.1
@@ -41,10 +45,6 @@ local irc = {
 		PREFIX = {{"o", "@"}, {"v", "+"}}
 	}
 }
-
-for i = 1, 10 do
-	math.randomseed(os.time() + os.clock() * 1000000 + math.random(2^16))
-end
 
 function irc:new(config)
 	self.config = config
@@ -702,7 +702,6 @@ end
 
 function irc:call_command(state, channel, message)
 	local status, result, err = pcall(self.run_command, self, state, channel, message)
-	
 	if status and not err then
 		return result
 	else
@@ -957,6 +956,7 @@ function irc:fix_color(color_code, s)
 end
 
 function irc:optimize_format(s)
+	s = tostring(s)
 	s = s:gsub("\002(%s*)\002", "%1") -- bold
 	s = s:gsub("\029(%s*)\029", "%1") -- italics
 
