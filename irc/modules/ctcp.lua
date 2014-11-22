@@ -47,34 +47,35 @@ return function(irc)
 
 		return table.concat(out, " | ")
 	end, true, "+float...")
-	irc:add_hook("ctcp", "on_notice_ctcp_ping", function(irc, state, channel, message)
-		local pings = irc.linda:get("ctcp.pings")
-		if not pings then
-			return
+	irc:add_hook("ctcp", "on_notice_ctcp_ping", function(irc, state, channel, random_string)
+		local nick = irc:lower(state.nick)
+		if irc.linda:get("ctcp.ping.nick." .. nick) then
+			irc.linda:set("ctcp.ping.received-" .. nick, true)
+			irc.linda:set("ctcp.ping.nick." .. nick, nil)
 		end
-		local n = tonumber(message)
-		if not n then
+		local pings = irc.linda:get("ctcp.pings")
+		if not pings or random_string ~= pings.random_string then
 			return
 		end
 
-		local ping = socket.gettime() - n
-		if ping < 0 then
-			-- h4x0r
-		else
-			pings[state.host] = ping
-		end
+		pings.pings[state.host] = socket.gettime() - pings.time
 
 		irc.linda:set("ctcp.pings", pings)
 	end)
 	irc:add_command("ctcp", "pings", function(irc, state, channel, wait)
-		local socket = require("socket")
-		--if irc.linda:get("ctcp.pings") then
-			--return nil, "Ping taking place"
-		--end
-		irc.linda:set("ctcp.pings", {})
-		irc:ctcp_privmsg(channel, "PING " .. socket.gettime())
+		wait = wait or 3
+		assert(wait >= 1,  "Wait time is too small")
+		assert(wait <= 10, "Wait time is too big")
+		assert(not irc.linda:get("ctcp.pings"), "Ping taking place")
 
-		socket.sleep(wait or 5)
+		local socket = require("socket")
+
+		local random_string = utils.random_string(16)
+		local time = ("%.12f"):format(socket.gettime())
+		irc.linda:set("ctcp.pings", {random_string=random_string, time=time, pings={}})
+		irc:ctcp_privmsg(channel, "PING " .. random_string)
+
+		socket.sleep(wait)
 
 		local pings = irc.linda:get("ctcp.pings")
 		local funcs, ping_count = {}, {}
@@ -85,7 +86,7 @@ return function(irc)
 		table.insert(funcs, {">=1000ms", function(x) return x >= 1 end})
 		table.insert(ping_count, 0)
 
-		for mask, ping in pairs(pings) do
+		for mask, ping in pairs(pings.pings) do
 			for i, func in ipairs(funcs) do
 				if func[2](ping) then
 					ping_count[i] = ping_count[i] + 1
@@ -101,6 +102,24 @@ return function(irc)
 
 		return table.concat(out, " | ")
 	end, true, "+float...")
+
+	irc:add_command("ctcp", "ping", function(irc, state, channel, nick)
+		local socket = require("socket")
+		nick = irc:lower(nick)
+		local random_string = utils.random_string(16)
+
+		local start = socket.gettime()
+		irc:ctcp_privmsg(nick, "PING " .. random_string)
+		irc.linda:set("ctcp.ping.nick." .. nick, true)
+		local ping = irc.linda:receive(5, "ctcp.ping.received-" .. nick)
+		irc.linda:set("ctcp.ping.nick." .. nick, nil)
+		irc.linda:set("ctcp.ping.received-" .. nick, nil)
+		assert(ping, "timeout")
+
+		local n = socket.gettime() - start
+
+		return ("%.8f"):format(n)
+	end, true)
 
 	irc:add_hook("ctcp", "on_privmsg_ctcp_version", function(irc, state, channel, message)
 		irc:ctcp_notice(state.nick, "VERSION lua_bot 0.1")
