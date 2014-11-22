@@ -560,7 +560,7 @@ function irc:parse_line(s)
 	return tags, prefix, command, args
 end
 
-local tag_format_escapes = {[";"] = "\\:", [" "] = "\s", ["\000"] = "\\0", ["\\"] = "\\\\", ["\r"] = "\\r", ["\n"] = "\\n"}
+local tag_format_escapes = {[";"] = "\\:", [" "] = "\\s", ["\000"] = "\\0", ["\\"] = "\\\\", ["\r"] = "\\r", ["\n"] = "\\n"}
 local tag_format_escapes_pattern = "[; %z\\\r\n]"
 
 function irc:format_msg(command, ...)
