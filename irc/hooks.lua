@@ -101,7 +101,10 @@ return function(irc)
 			for _, capability in ipairs(server_capabilities) do
 				local modifiers, capability, value = parse_capability(capability)
 				if irc.supported_capabilities[capability] then
-					table.insert(capabilities_in_common, capability)
+					if not (capability == "sasl" and not irc.config.sasl_pass) then
+						-- ignore sasl when we have no sasl password
+						table.insert(capabilities_in_common, capability)
+					end
 				end
 				irc.received_capabilities[capability] = value
 			end
