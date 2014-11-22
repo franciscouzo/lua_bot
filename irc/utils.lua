@@ -628,9 +628,6 @@ do
 			end
 		end
 	else
-		for i = 1, 10 do
-			math.randomseed(os.time() + os.clock() * 1000000 + math.random(2^16))
-		end
 		utils.random = math.random
 	end
 end
