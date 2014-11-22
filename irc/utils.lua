@@ -608,4 +608,41 @@ function utils.limited_sink(t, limit)
 	end
 end
 
+do
+	if io.open("/dev/urandom") then
+		utils.random = function(a, b)
+			if a then
+				if b then
+					return utils.random(b - a) + a
+				else
+					local urandom = io.open("/dev/urandom")
+					local s = urandom:read(math.ceil(math.log(a) / math.log(256)))
+					local n = 0
+					for i = 1, #s do
+						n = n * 256 + s:byte(i)
+					end
+					return n % a
+				end
+			else
+				return utils.random(0, 2^53) / 2^53
+			end
+		end
+	else
+		for i = 1, 10 do
+			math.randomseed(os.time() + os.clock() * 1000000 + math.random(2^16))
+		end
+		utils.random = math.random
+	end
+end
+
+function utils.random_string(len, alphabet)
+	alphabet = alphabet or "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	local out = {}
+	for i = 1, len do
+		local j = utils.random(#alphabet)
+		out[i] = alphabet:sub(j, j)
+	end
+	return table.concat(out)
+end
+
 return utils
