@@ -344,7 +344,7 @@ return function(irc)
 		local t = {}
 		local status, _, response_code = pcall(http.request({
 			url = site,
-			sink = limited_sink(t, 512 * 1024)
+			sink = utils.limited_sink(t, 512 * 1024)
 		}))
 		if response_code ~= 200 then
 			return site .. " looks down from here."
