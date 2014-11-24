@@ -357,6 +357,33 @@ return function(irc)
 		end
 	end, true)
 
+	irc:add_command("misc", "download", function(irc, state, channel, url)
+		local http = require("socket.http")
+		http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
+		local https = require("ssl.https")
+		local url_parse = require("socket.url").parse
+
+		local parsed = url_parse(url)
+		assert(parsed, "Invalid url")
+		assert(parsed.scheme, "Invalid url")
+		assert(parsed.host, "Invalid url")
+		assert(parsed.scheme == "http" or parsed.scheme == "https", "Unsupported scheme")
+
+		url = url:gsub("#.*", "") -- stupid socket.http, it sends the fragment
+
+		local t = {}
+		local request = ({http=http, https=https})[parsed.scheme].request
+		pcall(request, {
+			url = url,
+			sink = utils.limited_sink(t, 10 * 1024)
+		})
+		local s = table.concat(t)
+
+		assert(#s <= 2048, "Max length: 2048")
+
+		return s
+	end, true)
+
 	irc:add_command("misc", "pronunciation", function(irc, state, channel, word)
 		local http = require("socket.http")
 		http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
