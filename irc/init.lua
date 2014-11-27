@@ -110,45 +110,45 @@ end
 function irc:connect()
 	local servers = utils.listify(self.config.servers)
 	assert(#servers > 0, "Server list is empty")
-	while true do
-		for _, server in ipairs(servers) do
-			local port = self.config.ssl and 6697 or 6667
-			if type(server) == "table" then
-				server, port = unpack(server)
-			end
 
-			local status, sock = pcall(socket.connect, server, port)
-			if not (status and sock) then
+	for _, server in ipairs(servers) do
+		local port = self.config.ssl and 6697 or 6667
+		if type(server) == "table" then
+			server, port = unpack(server)
+		end
+
+		local status, sock, err = pcall(socket.connect, server, port)
+		if not (status and sock) then
+			print(("%s (%s:%i)"):format(err, server, port))
+			return
+		end
+
+		sock:setoption("tcp-nodelay", true)
+		sock:setoption("keepalive", true)
+
+		if self.config.ssl then
+			local params = utils.deepcopy(self.config.ssl)
+			params.mode = "client"
+
+			local sock_, err = ssl.wrap(sock, params)
+			sock = sock_
+
+			if not sock then
+				(self.config.ssl.exit_on_error and error or print)(err)
 				return
 			end
 
-			sock:setoption("tcp-nodelay", true)
-			sock:setoption("keepalive", true)
+			local success, err = sock:dohandshake()
 
-			if self.config.ssl then
-				local params = utils.deepcopy(self.config.ssl)
-				params.mode = "client"
-
-				local sock_, err = ssl.wrap(sock, params)
-				sock = sock_
-
-				if not sock then
-					(self.config.ssl.exit_on_error and error or print)(err)
-					return
-				end
-
-				local success, err = sock:dohandshake()
-
-				if not success then
-					(self.config.ssl.exit_on_error and error or print)(err)
-					return
-				end
+			if not success then
+				(self.config.ssl.exit_on_error and error or print)(err)
+				return
 			end
-
-			sock:settimeout(0)
-			self.connected = true
-			return sock
 		end
+
+		sock:settimeout(0)
+		self.connected = true
+		return sock
 	end
 end
 
@@ -169,8 +169,13 @@ end
 function irc:true_main_loop()
 	self.running = true
 	while self.running do
+		local try = 0
 		repeat
+			try = try + 1
 			self.socket = self:connect()
+			if not self.socket then
+				socket.sleep(math.min(600, 2 ^ try))
+			end
 		until self.socket
 
 		self:call_hook("on_connect")
