@@ -386,7 +386,7 @@ local build_headline = function()
 	local headline = utils.random_choice(headline_structures)
 	
 	headline = headline:gsub("%%(%w-)%%", function(word)
-		return utils.capitalize(utils.random_choice(words[word])])
+		return utils.capitalize(utils.random_choice(words[word]))
 	end)
 
 	headline = headline:gsub("  ", " "):gsub(" a ([aeiouAEIOU])", function(vowel)
