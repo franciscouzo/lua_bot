@@ -20,7 +20,7 @@ return function(irc)
 		local obj, pos, err = json.decode(response)
 		assert(not err, err)
 
-		local first_result = obj.responseData.results[result_n]
+		local first_result = assert(obj.responseData.results[result_n], "No results")
 		local result_url = first_result.unescapedUrl
 		local content = first_result.content:gsub("</?b>", "\002"):gsub("\n", " ")
 		content = html.unescape(content)
@@ -74,8 +74,8 @@ return function(irc)
 		local obj, pos, err = json.decode(response)
 		assert(not err, err)
 
-		local item = obj.responseData.results[result_n]
-		return item.tbUrl
+		local item = assert(obj.responseData.results[result_n], "No results")
+		return item.url
 	end, true)
 	irc:add_command("google", "calc", function(irc, state, channel, msg)
 		assert(utils.strip(msg) ~= "", "Empty request")
