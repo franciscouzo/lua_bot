@@ -527,7 +527,7 @@ return function()
 		for i = 1, num do
 			local pattern = table.remove(topic_patterns)
 			pattern = pattern:gsub("{(.-)}", function(word)
-				return newage.words[word][math.random(#newage.words[word])]
+				return utils.random_choice(newage.words[word])
 			end)
 			table.insert(result, utils.capitalize(pattern) .. ".")
 		end

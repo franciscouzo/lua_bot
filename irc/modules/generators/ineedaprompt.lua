@@ -501,7 +501,7 @@ return function(irc, state, channel, msg)
 		end
 		local random_word
 		repeat
-			random_word = words[type][math.random(#words[type])]
+			random_word = utils.random_choice(words[type])
 		until not inside(sentence_array, random_word)
 		
 		table.insert(sentence_array, {type, random_word})

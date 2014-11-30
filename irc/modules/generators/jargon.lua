@@ -19,8 +19,8 @@ local constructs = {
 }
 
 return function()
-	local construct = constructs[math.random(#constructs)]
-	local out = construct:gsub("{(.-)}", function(word) return words[word][math.random(#words[word])] end)
+	local construct = utils.random_choice(constructs)
+	local out = construct:gsub("{(.-)}", function(word) return utils.random_choice(words[word]) end)
 	out = utils.capitalize(out)
 	return out
 end
