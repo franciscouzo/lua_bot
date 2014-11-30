@@ -54,8 +54,11 @@ function utils:split(separator, max, regex)
 	return out
 end
 
-function utils.capitalize(s)
-	return (s:lower():gsub("^.", string.upper))
+function utils.capitalize(s, lower_rest)
+	if lower_rest then
+		s = s:lower()
+	end
+	return (s:gsub("^.", string.upper))
 end
 
 function utils.lower(s, min, max)
