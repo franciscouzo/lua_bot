@@ -29,9 +29,8 @@ return function(irc)
 		end
 
 		table.insert(send_times[state.host], time)
-
 		if table.remove(send_times[state.host], 1) - (time - config.wait_time or 15) > 0 then
 			ignoring[state.host] = time + config.ignore_time or 60
 		end
-	end)
+	end, false, 1)
 end
