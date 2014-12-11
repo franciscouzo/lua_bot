@@ -1,5 +1,5 @@
 local utils = require("irc.utils")
-local glob = require("irc.modules.code.glob")
+local glob = require("glob")
 
 return function(irc)
 	irc:add_command("string", "string.upper", function(irc, state, channel, msg)
