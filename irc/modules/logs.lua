@@ -13,16 +13,8 @@ local function log(irc, state, channel, line)
 
 	line = ansi.strip(line)
 	line = irc:strip_color(line)
-	
-	local time
-	if state and state.tags and state.tags.time then
-		local year, month, day, hour, minute, second, millisecond = state.tags.time:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)%.(%d+)Z")
-		if year then
-			time = os.time({year = year, month = month, day = day, hour = hour, min = minute, sec = second})
-		end
-	end
 
-	local date = os.date("%X", time)
+	local date = os.date("%X", state and state.time)
 
 	file:write("[" .. date .. "] " .. line .. "\n")
 	file:close()
