@@ -837,6 +837,10 @@ function irc:quit(msg)
 end
 
 function irc:privmsg(channel, msg)
+	if not msg or msg == "" then
+		return
+	end
+
 	msg = self:optimize_format(msg)
 	if msg:find("%z") then
 		local list = utils.unescape_list(msg)
@@ -851,6 +855,10 @@ function irc:privmsg(channel, msg)
 end
 
 function irc:notice(channel, msg)
+	if not msg or msg == "" then
+		return
+	end
+
 	msg = self:optimize_format(msg)
 	if msg:find("%z") then
 		local list = utils.unescape_list(msg)
