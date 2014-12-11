@@ -293,10 +293,9 @@ function irc:call_hook(hook_name, ...)
 			-- but they can be stopped
 			self:hook_thread(hook.func, ...)
 		else
-			local status, ret = pcall(hook.func, self, ...)
-			if not status then
-				print(ret)
-			elseif ret then
+			local args = {...}
+			local status, ret = xpcall(function() return hook.func(self, unpack(args)) end, debug.traceback)
+			if status and ret then
 				return ret
 			end
 		end
@@ -305,7 +304,7 @@ end
 
 local hook_counter = 1
 
-function irc:add_hook(module, hook, f, threaded)
+function irc:add_hook(module, hook, f, threaded, pos)
 	if not (module and hook and f) then
 		return nil, "Insufficient arguments"
 	end
@@ -320,7 +319,11 @@ function irc:add_hook(module, hook, f, threaded)
 	if not self.hook_order[hook] then
 		self.hook_order[hook] = {}
 	end
-	table.insert(self.hook_order[hook], id)
+	if pos then
+		table.insert(self.hook_order[hook], pos, id)
+	else
+		table.insert(self.hook_order[hook], id)
+	end
 	if not self.hooks[hook] then
 		self.hooks[hook] = {}
 	end
@@ -834,26 +837,30 @@ function irc:quit(msg)
 end
 
 function irc:privmsg(channel, msg)
-	if not msg or msg == "" then
-		return
-	end
 	msg = self:optimize_format(msg)
 	if msg:find("%z") then
 		local list = utils.unescape_list(msg)
 		msg = table.concat(list, ", ")
 	end
+
+	if not msg or msg == "" then
+		return
+	end
+
 	self:send("PRIVMSG", channel, msg)
 end
 
 function irc:notice(channel, msg)
-	if not msg or msg == "" then
-		return
-	end
 	msg = self:optimize_format(msg)
 	if msg:find("%z") then
 		local list = utils.unescape_list(msg)
 		msg = table.concat(list, ", ")
 	end
+
+	if not msg or msg == "" then
+		return
+	end
+
 	self:send("NOTICE", channel, msg)
 end
 
