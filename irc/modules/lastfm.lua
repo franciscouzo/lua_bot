@@ -10,10 +10,10 @@ return function(irc)
 		file:close()
 	end
 
-	local function save_lastfm()
+	local function save_lastfm(users)
 		os.rename("data/lastfm", "data/lastfm.backup")
 		local file = assert(io.open("data/lastfm", "w"))
-		file:write(utils.pickle(irc.linda:get("lastfm.users")))
+		file:write(utils.pickle(users))
 		file:close()
 	end
 
@@ -24,7 +24,7 @@ return function(irc)
 		local users = irc.linda:get("lastfm.users")
 		users[irc:lower(state.nick)] = msg
 		irc.linda:set("lastfm.users", users)
-		save_lastfm()
+		save_lastfm(users)
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 
