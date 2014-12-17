@@ -8,13 +8,12 @@ return function(irc)
 		file:close()
 	end
 
-	irc:add_hook("welcome", "on_quit", function(irc)
-		local file = io.open("data/welcome", "w")
-		if file then
-			file:write(utils.pickle(irc.linda:get("welcome.welcomes")))
-			file:close()
-		end
-	end)
+	local function save_welcome()
+		os.rename("data/welcome", "data/welcome.backup")
+		local file = assert(io.open("data/welcome", "w"))
+		file:write(utils.pickle(irc.linda:get("welcome.welcomes")))
+		file:close()
+	end
 	
 	irc:add_hook("welcome", "on_cmd_join", function(irc, state, channel)
 		channel = irc:lower(channel)
@@ -36,6 +35,7 @@ return function(irc)
 			welcomes[channel] = msg
 		end
 		irc.linda:set("welcome.welcomes", welcomes)
+		save_welcome()
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false) -- non-async
 end
