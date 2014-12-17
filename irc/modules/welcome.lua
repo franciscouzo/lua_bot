@@ -8,10 +8,10 @@ return function(irc)
 		file:close()
 	end
 
-	local function save_welcome()
+	local function save_welcome(welcomes)
 		os.rename("data/welcome", "data/welcome.backup")
 		local file = assert(io.open("data/welcome", "w"))
-		file:write(utils.pickle(irc.linda:get("welcome.welcomes")))
+		file:write(utils.pickle(welcomes))
 		file:close()
 	end
 	
@@ -35,7 +35,7 @@ return function(irc)
 			welcomes[channel] = msg
 		end
 		irc.linda:set("welcome.welcomes", welcomes)
-		save_welcome()
+		save_welcome(welcomes)
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false) -- non-async
 end
