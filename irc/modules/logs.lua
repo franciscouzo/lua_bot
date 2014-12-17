@@ -44,9 +44,10 @@ return function(irc)
 	irc:add_hook("logs", "on_cmd", function(irc, cmd, state, channel, msg)
 		if cmd == "QUIT" then
 			-- use on_cmd instead of on_cmd_quit so we still have the user in irc.channels
+			msg = channel or ""
 			for channel, channel_data in pairs(irc.channels) do
 				if channel_data.users[irc:lower(state.nick)] then
-					log(irc, state, channel, ("-!- %s has quit (%s)"):format(state.nick, channel or "")) -- channel is msg
+					log(irc, state, channel, ("-!- %s has quit (%s)"):format(state.nick, msg))
 				end
 			end
 		elseif cmd == "PRIVMSG" then
