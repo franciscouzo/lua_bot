@@ -381,6 +381,14 @@ function irc:command_thread(state, channel, command)
 	table.insert(self.threads, thread)
 end
 
+function irc:module_set_threaded(module, threaded)
+	if not self.module_list[module] then
+		self.module_list[module] = {}
+	end
+
+	self.module_list[module].threaded = threaded
+end
+
 function irc:add_command(module, command, func, threaded, ...)
 	command = command:lower()
 	module = module:lower()
@@ -398,7 +406,7 @@ function irc:add_command(module, command, func, threaded, ...)
 	end
 
 	if not self.module_list[module] then
-		self.module_list[module] = {}
+		self.module_list[module] = {threaded=true}
 	end
 	
 	table.insert(self.module_list[module], command)
@@ -447,6 +455,7 @@ function irc:copy_for_lanes()
 	local irc = {}
 	local blacklist = {
 		socket = true, connect = true, new = true, true_main_loop = true,
+		hooks = true, commands = true,
 		hook_thread = true, command_thread = true, threads = true, manage_queue = true
 		, copy_for_lanes = true
 	}
@@ -462,6 +471,14 @@ function irc:copy_for_lanes()
 			end
 		end
 	end
+
+	irc.commands = {}
+	for command, command_info in pairs(self.commands) do
+		if self.module_list[command_info.module].threaded then
+			irc.commands[command] = command_info
+		end
+	end
+
 	irc.queue = {}
 	return irc
 end

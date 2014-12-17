@@ -415,6 +415,10 @@ return function(irc)
 
 	for _, module_name in pairs(irc.config.modules or {}) do
 		local module = require("irc.modules." .. module_name)
+		if type(module) == "table" then
+			irc:module_set_threaded(module_name, module.threaded)
+			module = module.func
+		end
 		if type(module) ~= "function" then
 			error("module must return a function (" .. module_name .. ")")
 		end
