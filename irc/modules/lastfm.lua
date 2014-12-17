@@ -15,7 +15,7 @@ return function(irc)
 		local file = assert(io.open("data/lastfm", "w"))
 		file:write(utils.pickle(irc.linda:get("lastfm.users")))
 		file:close()
-	end)
+	end
 
 	irc:add_command("lastfm", "set_lastfm_user", function(irc, state, channel, msg)
 		msg = utils.strip(msg)
