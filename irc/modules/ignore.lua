@@ -14,7 +14,7 @@ return function(irc)
 		local file = assert(io.open("data/ignoring", "w"))
 		file:write(utils.pickle(ignoring))
 		file:close()
-	end)
+	end
 
 	irc:add_command("ignore", "ignore", function(irc, state, channel, mask)
 		assert(mask:match(".+!.+@.+"), "Invalid mask")
