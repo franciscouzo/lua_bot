@@ -13,7 +13,7 @@ return function(irc)
 		local file = assert(io.open("data/factoids", "w"))
 		file:write(utils.pickle(factoids))
 		file:close()
-	end)
+	end
 
 	irc:add_hook("factoids", "on_cmd_privmsg", function(irc, state, channel, msg)
 		msg_no_prefix = msg:match("^%s*" .. utils.escape_pattern(irc.nick) .. "[:,]%s*(.+)%s*")
