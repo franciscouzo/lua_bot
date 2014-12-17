@@ -8,12 +8,11 @@ return function(irc)
 		file:close()
 	end
 
-	irc:add_hook("factoids", "on_quit", function(irc)
-		local file = io.open("data/factoids", "w")
-		if file then
-			file:write(utils.pickle(factoids))
-			file:close()
-		end
+	local function save_factoids()
+		os.rename("data/factoids", "data/factoids.backup")
+		local file = assert(io.open("data/factoids", "w"))
+		file:write(utils.pickle(factoids))
+		file:close()
 	end)
 
 	irc:add_hook("factoids", "on_cmd_privmsg", function(irc, state, channel, msg)
@@ -48,6 +47,7 @@ return function(irc)
 			end
 
 			table.insert(factoids[trigger], response)
+			save_factoids()
 			irc:notice(state.nick, "ok " .. state.nick)
 		else
 			msg = msg_no_prefix or msg
