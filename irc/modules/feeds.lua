@@ -67,13 +67,12 @@ return function(irc)
 	_irc.threaded = true
 	update_feeds(_irc)
 
-	irc:add_hook("feeds", "on_quit", function(irc)
-		local file = io.open("data/feeds", "w")
-		if file then
-			file:write(utils.pickle(irc.linda:get("feeds.feeds")))
-			file:close()
-		end
-	end)
+	local function safe_feeds()
+		os.rename("data/feeds", "data/feeds.backup")
+		local file = assert(io.open("data/feeds", "w"))
+		file:write(utils.pickle(irc.linda:get("feeds.feeds")))
+		file:close()
+	end
 
 	irc:add_command("feeds", "add_feed", function(irc, state, channel, url)
 		url = utils.strip(url)
@@ -85,6 +84,7 @@ return function(irc)
 		feeds[url].channels[channel] = true
 
 		irc.linda:set("feeds.feeds", feeds)
+		safe_feeds()
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 
@@ -103,6 +103,7 @@ return function(irc)
 		end
 
 		irc.linda:set("feeds.feeds", feeds)
+		safe_feeds()
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 	
