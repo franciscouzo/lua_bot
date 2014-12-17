@@ -13,13 +13,12 @@ return function(irc)
 		file:close()
 	end
 
-	irc:add_hook("commands", "on_quit", function(irc)
-		local file = io.open("data/commands", "w")
-		if file then
-			file:write(utils.pickle(commands))
-			file:close()
-		end
-	end)
+	local function save_commands()
+		os.rename("data/commands", "data/commands.backup")
+		local file = assert(io.open("data/commands", "w"))
+		file:write(utils.pickle(commands))
+		file:close()
+	end
 
 	irc:add_command("commands", "add_cmd", function(irc, state, channel, msg)
 		assert(not irc.threaded, "This command can't be run on threaded mode")
@@ -30,6 +29,7 @@ return function(irc)
 			return assert(irc:run_command(state, channel, command .. msg))
 		end, true))
 		commands[cmd:lower()] = command
+		save_commands()
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false) -- not threaded
 
@@ -41,6 +41,7 @@ return function(irc)
 		assert(irc.commands[command].module == "user_commands", "Non-deletable command")
 		assert(irc:del_command(command))
 		commands[command:lower()] = nil
+		save_commands()
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 
