@@ -56,7 +56,7 @@ return function(irc)
 		assert(irc.module_list[module], "Nonexistent module")
 
 		local commands = {}
-		for _, command in pairs(irc.module_list[module]) do
+		for _, command in ipairs(irc.module_list[module]) do
 			table.insert(commands, command)
 		end
 		return utils.escape_list(commands)
