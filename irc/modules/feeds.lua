@@ -67,10 +67,10 @@ return function(irc)
 	_irc.threaded = true
 	update_feeds(_irc)
 
-	local function save_feeds()
+	local function save_feeds(feeds)
 		os.rename("data/feeds", "data/feeds.backup")
 		local file = assert(io.open("data/feeds", "w"))
-		file:write(utils.pickle(irc.linda:get("feeds.feeds")))
+		file:write(utils.pickle(feeds))
 		file:close()
 	end
 
@@ -84,7 +84,7 @@ return function(irc)
 		feeds[url].channels[channel] = true
 
 		irc.linda:set("feeds.feeds", feeds)
-		save_feeds()
+		save_feeds(feeds)
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 
@@ -103,7 +103,7 @@ return function(irc)
 		end
 
 		irc.linda:set("feeds.feeds", feeds)
-		save_feeds()
+		save_feeds(feeds)
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 	
