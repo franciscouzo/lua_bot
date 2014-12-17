@@ -9,18 +9,18 @@ return function(irc)
 		file:close()
 	end
 
-	irc:add_hook("ignore", "on_quit", function(irc)
-		local file = io.open("data/ignoring", "w")
-		if file then
-			file:write(utils.pickle(ignoring))
-			file:close()
-		end
+	local function save_ignoring()
+		os.rename("data/ignoring", "data/ignoring.backup")
+		local file = assert(io.open("data/ignoring", "w"))
+		file:write(utils.pickle(ignoring))
+		file:close()
 	end)
 
 	irc:add_command("ignore", "ignore", function(irc, state, channel, mask)
 		assert(mask:match(".+!.+@.+"), "Invalid mask")
 		local pattern = glob.globtopattern(mask)
-		ignoring[pattern] = true
+		ignoring[pattern] = mask
+		save_ignoring()
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 
@@ -28,13 +28,14 @@ return function(irc)
 		assert(mask:match(".+!.+@.+"), "Invalid mask")
 		local pattern = glob.globtopattern(mask)
 		ignoring[pattern] = nil
+		save_ignoring()
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 
 	irc:add_command("ignore", "ignore_list", function(irc, state, channel)
 		local l = {}
-		for ignore_pattern in pairs(ignoring) do
-			table.insert(l, ignore_pattern)
+		for _, mask in pairs(ignoring) do
+			table.insert(l, mask)
 		end
 		return utils.escape_list(l)
 	end, false)
