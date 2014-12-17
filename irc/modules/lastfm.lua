@@ -10,12 +10,11 @@ return function(irc)
 		file:close()
 	end
 
-	irc:add_hook("lastfm", "on_quit", function(irc)
-		local file = io.open("data/lastfm", "w")
-		if file then
-			file:write(utils.pickle(irc.linda:get("lastfm.users")))
-			file:close()
-		end
+	local function save_lastfm()
+		os.rename("data/lastfm", "data/lastfm.backup")
+		local file = assert(io.open("data/lastfm", "w"))
+		file:write(utils.pickle(irc.linda:get("lastfm.users")))
+		file:close()
 	end)
 
 	irc:add_command("lastfm", "set_lastfm_user", function(irc, state, channel, msg)
@@ -25,6 +24,8 @@ return function(irc)
 		local users = irc.linda:get("lastfm.users")
 		users[irc:lower(state.nick)] = msg
 		irc.linda:set("lastfm.users", users)
+		save_lastfm()
+		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 
 	local function nowplaying(irc, state, channel, msg)
