@@ -1,12 +1,14 @@
 local lfs = require("lfs")
 
 local modules = {
-	'logs', 'active', 'autorejoin', 'autoignore', 'module_management',
-	'permissions', 'output_command', 'sed_replace', 'url_info',
+	'logs', 'active', 'autorejoin', 'autoignore', 'ignore',
+	'module_management', 'permissions', 'output_command', 'sed_replace',
+	--[['url_info',]] 'unknown_command',
 
-	'cleverbot', 'code', 'color', 'commands', 'ctcp', 'dcc', 'encode',
-	'fake_message', 'games', 'generators', 'google', 'hash', 'highlight',
-	'image', 'karma', 'lastfm', 'misc', 'multiuser', 'seen', 'shorten',
+	'cleverbot', 'code', 'color', 'commands', 'communicate', 'ctcp', 'dcc',
+	'encode', 'factoids', 'fake_message', 'feeds', 'figlet', 'games',
+	'generators', 'google', 'hash', 'highlight', 'image', 'json', 'karma',
+	'lastfm', 'maze', 'misc', 'multiuser', 'qrcode', 'seen', 'shorten',
 	'shutup', 'tell', 'timer', 'translation_party', 'utils', 'vote', 'welcome'
 }
 
@@ -46,7 +48,7 @@ return {
 		
 	},
 	channels = {
-		["channel"] = {
+		["#channel"] = {
 			admin_channel = true,
 			autojoin = true,
 			--key = "key",
@@ -69,22 +71,27 @@ return {
 	--output_command = "rainbow",
 	
 	module_permissions = {
-		["active"]    = "v",
-		["ctcp"]      = {true, "v"}, -- {admin}
-		["highlight"] = "v",
-		["image"]     = {true, "o"},
-		["multiuser"] = {true, "v"},
-		["shutup"]    = "v",
-		["translation_party"] = {true, "o"},
-		["typo"]      = "v",
-		["utils"]     = {true, "o"},
-		["vote"]      = "v",
-		["welcome"]   = {true, "o"} -- it can use arbitrary commands on join
+		active            = "v",
+		ctcp              = {true, "v"}, -- {admin}
+		figlet            = {true, "v"},
+		highlight         = "v",
+		ignore            = {true, "o"},
+		image             = {true, "o"},
+		maze              = {true, "v"},
+		multiuser         = {true, "v"},
+		qrcode            = {true, "v"},
+		shutup            = "v",
+		translation_party = {true, "o"},
+		typo              = "v",
+		utils             = {true, "o"},
+		welcome           = {true, "o"} -- it can use arbitrary commands on join
 	},
 	
 	command_permissions = {
-		["add_cmd"] = {true, "o"},
-		["del_cmd"] = {true, "o"},
+		add_cmd = {true, "o"},
+		del_cmd = {true, "o"},
+		vote_start = "v",
+		vote_end   = "v"
 	},
 	
 	--[[dcc = {
