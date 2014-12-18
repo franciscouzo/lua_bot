@@ -19,22 +19,22 @@ return function(irc)
 	irc:add_command("ignore", "ignore", function(irc, state, channel, mask)
 		assert(mask:match(".+!.+@.+"), "Invalid mask")
 		local pattern = glob.globtopattern(mask)
-		ignoring[pattern] = mask
+		ignoring[mask] = pattern
 		save_ignoring()
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 
 	irc:add_command("ignore", "unignore", function(irc, state, channel, mask)
+		assert(ignoring[mask], "Unknown mask")
 		assert(mask:match(".+!.+@.+"), "Invalid mask")
-		local pattern = glob.globtopattern(mask)
-		ignoring[pattern] = nil
+		ignoring[mask] = nil
 		save_ignoring()
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
 
 	irc:add_command("ignore", "ignore_list", function(irc, state, channel)
 		local l = {}
-		for _, mask in pairs(ignoring) do
+		for mask in pairs(ignoring) do
 			table.insert(l, mask)
 		end
 		return utils.escape_list(l)
@@ -44,7 +44,7 @@ return function(irc)
 		if irc:admin_user_mode(state.nick, "v") then
 			return
 		end
-		for ignore_pattern in pairs(ignoring) do
+		for _, ignore_pattern in pairs(ignoring) do
 			if state.prefix:match(ignore_pattern) then
 				return true
 			end
