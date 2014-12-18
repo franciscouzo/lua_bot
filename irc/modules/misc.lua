@@ -231,6 +231,16 @@ return function(irc)
 		end))
 	end, false)
 
+	irc:add_command("misc", "boxify2", function(irc, state, channel, msg)
+		local utf8 = require("utf8")
+		return (utf8.gsub(msg, ".", function(c)
+			if utf8.byte(c) <= 32 then
+				return c
+			end
+			return c .. utf8.escape("%x20e3 ") -- monospace font
+		end))
+	end, false)
+
 	local morse = {
 		["!"] = "---.", ['"'] = ".-..-.", ["$"] = "...-..-", ["'"] = ".----.",
 		["("] = "-.--.", [")"] = "-.--.-", ["+"] = ".-.-.", [","] = "--..--",
