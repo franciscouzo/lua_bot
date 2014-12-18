@@ -105,7 +105,7 @@ return function(irc)
 
 	irc:add_command("ctcp", "ping", function(irc, state, channel, nick)
 		local socket = require("socket")
-		nick = irc:lower(nick)
+		nick = irc:lower(utils.strip(nick))
 		local random_string = utils.random_string(16)
 
 		local start = socket.gettime()
