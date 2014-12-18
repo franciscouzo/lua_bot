@@ -8,7 +8,7 @@ return function(irc)
 		file:close()
 	end
 
-	local function save_tell()
+	local function save_tell(tell)
 		os.rename("data/tell", "date/tell.backup")
 		local file = assert(io.open("data/tell", "w"))
 		file:write(utils.pickle(tell))
