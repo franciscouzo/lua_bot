@@ -196,7 +196,14 @@ return function(irc)
 	irc:add_hook("hooks", "on_rpl_welcome", function(irc)
 		local socket = require("socket")
 		if irc.config.nickserv_pass then
-			irc:privmsg("NickServ", irc.config.nickserv_pass)
+			local nickserv_pass_type = irc.config.nickserv_pass_type or 1
+			if nickserv_pass_type == 1 then
+				irc:privmsg("NickServ", "identify " .. irc.config.nickserv_pass)
+			elseif nickserv_pass_type == 2 then
+				irc:send("NickServ", "identify " .. irc.config.nickserv_pass)
+			else
+				print("Unknown nickserv_pass_type " .. nickserv_pass_type)
+			end
 			socket.sleep(5)
 			-- Sometimes when you join too fast you might leak your host
 			-- Although an attacker could view your host if he used monitor/watch before it was activated

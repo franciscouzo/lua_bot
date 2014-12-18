@@ -32,6 +32,7 @@ return {
 	--pass = ...,
 	--sasl_pass = ...,
 	--nickserv_pass = ...,
+	--nickserv_pass_type = 1,
 	nick = "lua_bot",
 	prefixes = {".", "%s, ", "%s: "},
 	error_reporting = {
