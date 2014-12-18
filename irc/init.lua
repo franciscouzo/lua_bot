@@ -472,6 +472,13 @@ function irc:copy_for_lanes()
 		end
 	end
 
+	irc.hooks = {}
+	for hook, hook_info in pairs(self.hooks) do
+		if (self.module_list[hook_info.module] or {}).threaded then
+			irc.hooks[hook] = hook_info
+		end
+	end
+
 	irc.commands = {}
 	for command, command_info in pairs(self.commands) do
 		if self.module_list[command_info.module].threaded then
