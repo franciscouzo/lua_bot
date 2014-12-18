@@ -106,6 +106,7 @@ return {
 	autorejoin_time = 60,
 	remove_unactive_after = 3600, -- seconds
 	autoignore = {
+		pattern = "*!*@{host}",
 		messages = 5,
 		wait_time = 15,
 		ignore_time = 60

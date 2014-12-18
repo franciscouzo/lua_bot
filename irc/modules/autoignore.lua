@@ -1,3 +1,5 @@
+local glob = require("glob")
+
 return function(irc)
 	local ignoring = {}
 
@@ -11,26 +13,27 @@ return function(irc)
 		local socket = require("socket")
 		local time = socket.gettime()
 
-		if ignoring[state.host] then
-			if ignoring[state.host] < time then
-				ignoring[state.host] = nil
+		local config = irc:get_config("autoignore") or {}
+		local mask = (config.format or "*!*@{host}"):gsub("{(.-)}", state)
+
+		if ignoring[mask] then
+			if ignoring[mask] < time then
+				ignoring[mask] = nil
 			else
 				return true -- we're ignoring you
 			end
 		end
 
-		local config = irc:get_config("autoignore") or {}
-		
-		if not send_times[state.host] then
-			send_times[state.host] = {}
+		if not send_times[mask] then
+			send_times[mask] = {}
 			for i = 1, config.messages or 5 do
-				send_times[state.host][i] = 0
+				send_times[mask][i] = 0
 			end
 		end
 
-		table.insert(send_times[state.host], time)
-		if table.remove(send_times[state.host], 1) - (time - config.wait_time or 15) > 0 then
-			ignoring[state.host] = time + config.ignore_time or 60
+		table.insert(send_times[mask], time)
+		if table.remove(send_times[mask], 1) - (time - config.wait_time or 15) > 0 then
+			ignoring[mask] = time + config.ignore_time or 60
 		end
 	end, false, 1)
 end
