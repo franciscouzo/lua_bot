@@ -3,28 +3,23 @@ local utils = require("irc.utils")
 return function(irc)
 	irc:add_command("multiuser", "multiuser", function(irc, state, channel, msg)
 		-- searches for users in the same channel with the same host
+
 		channel = irc:lower(channel)
 		assert(irc.channels[channel], "Invalid channel")
-		local repeated = {}
-		for nick1, user1 in pairs(irc.channels[channel].users) do
-			for nick2, user2 in pairs(irc.channels[channel].users) do
-				if user1.host == user2.host and nick1 ~= nick2 then
-					if not repeated[user1.host] then
-						repeated[user1.host] = {}
-					end
-					repeated[user1.host][nick1] = user1.nick
-					repeated[user1.host][nick2] = user2.nick
-				end
-			end
+
+		local users_by_host = {}
+		for _, user in pairs(irc.channels[channel].users) do
+			users_by_host[user.host] = users_by_host[user.host] or {}
+			table.insert(users_by_host[user.host], user.nick)
 		end
+
 		local out = {}
-		for hosts, nicks_map in pairs(repeated) do
-			local nicks = {}
-			for _, nick in pairs(nicks_map) do
-				nicks[#nicks + 1] = nick
+		for host, nicks in pairs(users_by_host) do
+			if #nicks >= 2 then
+				table.insert(out, table.concat(nicks, " = "))
 			end
-			out[#out + 1] = table.concat(nicks, " = ")
 		end
+
 		return utils.escape_list(out)
 	end, false)
 	
