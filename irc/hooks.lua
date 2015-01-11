@@ -299,6 +299,26 @@ return function(irc)
 			irc:new_user(channel, nick, {modes = modes, user = user, host = host})
 		end
 	end)
+
+	irc:add_hook("hooks", "on_rpl_endofnames", function(irc, state, nick, channel, user)
+		if not irc.capabilities_in_common["userhost-in-names"] then
+			irc:send("WHO", channel)
+		end
+	end)
+
+	irc:add_hook("hooks", "on_rpl_whoreply", function(irc, state, _, channel, user, host, _, nick, modes, hopcount_realname)
+		local hopcount, realname = hopcount_realname:match("^(%d+) (.+)$")
+		hopcount = tonumber(hopcount)
+		irc:update_user(nick, "user", user)
+		irc:update_user(nick, "host", host)
+		irc:update_user(nick, "realname", realname)
+		if modes:find("H", 1, true) then
+			-- H = Here
+			-- G = Gone, but it doesn't shows the reason, so it's not that helpful
+			irc:update_user(nick, "away", nil)
+		end
+	end)
+
 	irc:add_hook("hooks", "on_rpl_topic", function(irc, state, nick, channel, topic)
 		irc:get_channel(channel).topic = topic or ""
 	end)
