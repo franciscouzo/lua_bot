@@ -1,3 +1,4 @@
+local json = require("json")
 local html = require("irc.html")
 local utils = require("irc.utils")
 
@@ -10,47 +11,57 @@ local default_handler = function(irc, state, channel, url, s)
 	end
 end
 
+local function youtube_info(irc, state, channel, yt_id)
+	local success, title = pcall(function()
+		local https = require("ssl.https")
+		local response, response_code = https.request("https://gdata.youtube.com/feeds/api/videos/" .. yt_id .. "?alt=jsonc&v=2")
+		assert(response_code == 200, "Error requesting page")
+		local data, pos, err = json.decode(response)
+		assert(not err, err)
+
+		data = data.data
+		local title = data.title
+		local uploader = data.uploader
+		local uploaded = data.uploaded:match("^%d+%-%d+%-%d+")
+		
+		local duration = irc:run_command(state, channel, "format_seconds " .. tonumber(data.duration))
+		duration = duration or (math.floor(data.duration) .. " second" .. (data.duration == 1 and "" or "s"))
+
+		local comments = tonumber(data.commentCount)
+		local views = tonumber(data.viewCount)
+		local likes = tonumber(data.likeCount)
+		local dislikes = tonumber(data.ratingCount) - tonumber(data.likeCount)
+		
+		return ("%s | %s | %s | %s | %i comment%s, %i view%s, %i like%s, %i dislike%s"):format(
+			title, uploader, uploaded, duration,
+			comments, comments == 1 and "" or "s",
+			views,    views    == 1 and "" or "s",
+			likes,    likes    == 1 and "" or "s",
+			dislikes, dislikes == 1 and "" or "s")
+	end)
+
+	if success then
+		return title
+	end
+end
+
 local handlers = {
 	-- TODO, add more handlers
-	["www.youtube.com"] = function(irc, state, channel, url, s)
-		if url:match("^https?://www.youtube.com/watch%?v=.+") then
-			local success, title = pcall(function()
-				local title = s:match('<meta name="title" content="(.-)">')
-				local views_s = s:match('<div class="watch%-view%-count" >(.-)</div>')
-				local likes_s, dislikes_s = s:match('<span class="yt%-uix%-button%-content">([,%d%s]-)</span>.+<span class="yt%-uix%-button%-content">([,%d%s]-)</span>')
-				local author = s:match('"author": "(.-)"')
-				local length = s:match('"length_seconds":%s*"(%d-)"')
-
-				title      = html.unescape(utils.strip(title))
-				views_s    = utils.strip(views_s:match("([,%d%s]+)"))
-				likes_s    = utils.strip(likes_s)
-				dislikes_s = utils.strip(dislikes_s)
-				author     = utils.strip(author)
-				length     = utils.strip(length)
-
-				views    = tonumber((views_s:gsub(",", "")))
-				likes    = tonumber((likes_s:gsub(",", "")))
-				dislikes = tonumber((dislikes_s:gsub(",", "")))
-				length   = irc:run_command(state, channel, "format_seconds " .. length) or (length .. " seconds")
-
-				return ("%s | %s | %s | %s view%s, %s like%s, %s dislike%s"):format(
-					title, author, length,
-					views_s,    views    == 1 and "" or "s",
-					likes_s,    likes    == 1 and "" or "s",
-					dislikes_s, dislikes == 1 and "" or "s")
-			end)
-			print(title)
-			if success then
-				return title
-			end
+	["www.youtube.com"] = {function(irc, state, channel, url)
+		local yt_id = url:match("^https?://www.youtube.com/watch%?v=([%w_-]+)")
+		if yt_id then
+			return youtube_info(irc, state, channel, yt_id)
 		end
-	end,
-	["hastebin.com"] = function()
+	end, true},
+	["youtu.be"] = {function(irc, state, channel, url)
+		local yt_id = url:match("^https?://youtu.be/([%w_-]+)")
+		if yt_id then
+			return youtube_info(irc, state, channel, yt_id)
+		end
+	end, true},
+	["hastebin.com"] = {function()
 		return "" -- empty string evaluates to true, but irc:privmsg ignores empty strings
-	end
-	--["twitter.com"] = function(url, s)
-		--if url:match()
-	--end
+	end, true}
 }
 
 local function url_info(irc, state, channel, url)
@@ -68,6 +79,13 @@ local function url_info(irc, state, channel, url)
 
 	url = url:gsub("#.*", "") -- stupid socket.http, it sends the fragment
 
+	if (handlers[parsed.host] or {})[2] then
+		local url_info = handlers[parsed.host][1](irc, state, channel, url)
+		if url_info then
+			return url_info
+		end
+	end
+
 	local t = {}
 	local request = ({http=http, https=https})[parsed.scheme].request
 	pcall(request, {
@@ -75,8 +93,14 @@ local function url_info(irc, state, channel, url)
 		sink = utils.limited_sink(t, 1024 * 1024) -- 1MiB should be enough
 	})
 	local s = table.concat(t)
-	local handler = handlers[parsed.host] or default_handler
-	local url_info = handler(irc, state, channel, url, s) or default_handler(irc, state, channel, url, s)
+	local url_info
+
+	if not (handlers[parsed.host] or {})[2] then
+		url_info = handlers[parsed.host][1](irc, state, channel, url, s)
+	end
+	if not url_info then
+		url_info = default_handler(irc, state, channel, url, s)
+	end
 
 	return url_info
 end
