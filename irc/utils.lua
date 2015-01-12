@@ -275,8 +275,8 @@ function utils:e_split(delimiter, max, escape_char)
 end
 
 function utils.split_format(s, delimiter, callback, open, close, escape_char)
-	open = open or "["
-	close = close or "]"
+	open = open or "$("
+	close = close or ")"
 	escape_char = escape_char or "\\"
 
 	assert(type(delimiter) == "string")
@@ -284,22 +284,22 @@ function utils.split_format(s, delimiter, callback, open, close, escape_char)
 	assert(type(close) == "string")
 	assert(type(escape_char) == "string")
 
-	assert(#delimiter == 1)
-	assert(#open == 1 and #close == 1)
-	assert(#escape_char == 1)
+	assert(delimiter ~= "")
+	assert(open ~= "" and close ~= "")
+	assert(escape_char ~= "")
 
 	local t = {""}
 	local sub = ""
 	local escaped = false
-
+	local closing = false
 	local depth = 0
 
-	local escape = "[" .. utils.escape_pattern(delimiter .. open .. close .. escape_char) .. "]"
+	local escape = "^[" .. utils.escape_pattern(delimiter .. open .. close .. escape_char) .. "]"
 
-	for c in s:gmatch(".") do
+	while s ~= "" do
 		if escaped then
-			local esc = c
-			if not c:match(escape) then
+			local esc = s:sub(1, 1)
+			if not s:match(escape) then
 				esc = escape_char .. esc
 			end
 			if depth > 0 then
@@ -308,10 +308,13 @@ function utils.split_format(s, delimiter, callback, open, close, escape_char)
 				t[#t] = t[#t] .. esc
 			end
 			escaped = false
-		elseif c == escape_char then
+			s = s:sub(2)
+		elseif utils.startswith(s, escape_char) then
 			escaped = true
+			s = s:sub(#escape_char + 1)
 		else
-			if c == close then
+			if utils.startswith(s, close) then
+				s = s:sub(#close + 1)
 				depth = depth - 1
 				if depth < 0 then
 					return nil, "Unbalanced expression"
@@ -323,21 +326,27 @@ function utils.split_format(s, delimiter, callback, open, close, escape_char)
 					t[#t] = t[#t] .. callback_result
 					sub = ""
 				end
-			end
-			if depth > 0 then
-				sub = sub .. c
-			end
-			if c == open then
-				depth = depth + 1
+				closing = true
+			elseif depth > 0 then
+				sub = sub .. s:sub(1, 1)
+				s = s:sub(2)
 			end
 
-			if depth == 0 and c ~= close then
-				if c == delimiter then
+			if utils.startswith(s, open) then
+				depth = depth + 1
+				s = s:sub(#open + 1)
+			end
+
+			if depth == 0 and not closing then
+				if utils.startswith(s, delimiter) then
 					t[#t + 1] = ""
+					s = s:sub(#delimiter + 1)
 				else
-					t[#t] = t[#t] .. c
+					t[#t] = t[#t] .. s:sub(1, 1)
+					s = s:sub(2)
 				end
 			end
+			closing = false
 		end
 	end
 	if depth ~= 0 then
@@ -346,7 +355,6 @@ function utils.split_format(s, delimiter, callback, open, close, escape_char)
 	if escaped then
 		t[#t] = t[#t] .. escape_char
 	end
-	--t[#t] = t[#t] .. sub
 	return t
 end
 
