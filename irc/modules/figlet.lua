@@ -173,7 +173,6 @@ local fonts = {
 return function(irc)
 	irc:add_command("figlet", "figlet", function(irc, state, channel, msg)
 		local font = figlet.font(fonts_dir .. "standard.flf")
-		print(font)
 		for _, line in ipairs(figlet.ascii_art(msg, font, true, true)) do
 			if utils.strip(line) ~= "" then
 				irc:privmsg(channel, line)
