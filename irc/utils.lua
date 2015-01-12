@@ -314,7 +314,6 @@ function utils.split_format(s, delimiter, callback, open, close, escape_char)
 			s = s:sub(#escape_char + 1)
 		else
 			if utils.startswith(s, close) then
-				s = s:sub(#close + 1)
 				depth = depth - 1
 				if depth < 0 then
 					return nil, "Unbalanced expression"
@@ -325,16 +324,20 @@ function utils.split_format(s, delimiter, callback, open, close, escape_char)
 					end
 					t[#t] = t[#t] .. callback_result
 					sub = ""
+					s = s:sub(#close + 1)
 				end
 				closing = true
-			elseif depth > 0 then
+			end
+			if depth > 0 then
 				sub = sub .. s:sub(1, 1)
 				s = s:sub(2)
 			end
 
 			if utils.startswith(s, open) then
+				if depth == 0 then
+					s = s:sub(#open + 1)
+				end
 				depth = depth + 1
-				s = s:sub(#open + 1)
 			end
 
 			if depth == 0 and not closing then
