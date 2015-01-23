@@ -1060,6 +1060,10 @@ function irc:strip_foreground_color(s)
 	return (s:gsub("\3%d?%d?,(%d%d?)", "\3,%1"):gsub("\3%d%d?", ""))
 end
 
+function irc:strip_background_color(s)
+	return (s:gsub("\3(%d?%d?),%d%d?)", "\3%1"):gsub("\3,", ""))
+end
+
 function irc:strip_style(s)
 	s = self:strip_color(s)
 	s = s:gsub("[\2\15\22\29\31]", "")
