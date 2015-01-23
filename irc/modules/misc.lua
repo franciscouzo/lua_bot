@@ -342,6 +342,17 @@ return function(irc)
 			return out
 		end))
 	end, false)
+	irc:add_command("misc", "!", function(irc, state, channel, msg)
+		local out = {msg}
+		for i = 1, math.random(10, 15) do
+			table.insert(out, utils.weighted_choice({
+				["!"]   = 10,
+				["1"]   = 3,
+				["one"] = 1
+			}))
+		end
+		return table.concat(out)
+	end, false)
 	irc:add_command("misc", "sudo", function(irc, state, channel, command)
 		assert(irc:admin_user_mode(state.nick, "o"), "User is not in the sudoers file. This incident will be reported")
 		return irc:run_command(state, channel, command)
