@@ -8,20 +8,20 @@ local patterns = {
 
 return function(irc)
 	for color, color_code in pairs(irc.colors) do
-		irc:add_command("colors", color, function(irc, state, channel, msg)
+		irc:add_command("style", color, function(irc, state, channel, msg)
 			return irc:color(irc:strip_color(msg), color)
 		end, false)
 	end
 
 
-	irc:add_command("colors", "strip_style", function(irc, state, channel, msg)
+	irc:add_command("style", "strip_style", function(irc, state, channel, msg)
 		return irc:strip_style(msg)
 	end, false)
-	irc:add_command("colors", "strip_color", function(irc, state, channel, msg)
+	irc:add_command("style", "strip_color", function(irc, state, channel, msg)
 		return irc:strip_color(msg)
 	end, false)
 
-	irc:add_command("colors", "random_color", function(irc, state, channel, msg)
+	irc:add_command("style", "random_color", function(irc, state, channel, msg)
 		local out = ""
 		for c in msg:gmatch(".") do
 			out = out .. "\003" .. irc:fix_color(math.random(0, 16), c)
@@ -29,7 +29,7 @@ return function(irc)
 		return out
 	end, false)
 
-	irc:add_command("colors", "pattern_list", function(irc, state, channel, msg)
+	irc:add_command("style", "pattern_list", function(irc, state, channel, msg)
 		local patts = {}
 		for pattern in pairs(patterns) do
 			patts[#patts + 1] = pattern
@@ -37,7 +37,7 @@ return function(irc)
 		return utils.escape_list(patts)
 	end, false)
 
-	irc:add_command("colors", "pattern", function(irc, state, channel, msg)
+	irc:add_command("style", "pattern", function(irc, state, channel, msg)
 		if not msg:find(" ") then
 			assert(patterns[msg:lower()], "Invalid pattern")
 			local pattern = patterns[msg:lower()]
@@ -97,7 +97,7 @@ return function(irc)
 		return out
 	end, false)
 
-	irc:add_command("colors", "rainbow", function(irc, state, channel, msg)
+	irc:add_command("style", "rainbow", function(irc, state, channel, msg)
 		return irc:run_command(state, channel, "pattern 2 rainbow " .. msg)
 	end, false)
 end
