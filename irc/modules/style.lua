@@ -13,6 +13,13 @@ return function(irc)
 		end, false)
 	end
 
+	local styles = {{"bold", "\2"}, {"reverse", "\22"}, {"italics", "\29"}, {"underline", "\31"}}
+	for _, style in ipairs(styles) do
+		local style, style_code = unpack(style)
+		irc:add_command("style", style, function(irc, state, channel, msg)
+			return style_code .. msg .. style_code
+		end)
+	end
 
 	irc:add_command("style", "strip_style", function(irc, state, channel, msg)
 		return irc:strip_style(msg)
