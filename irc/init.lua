@@ -1057,9 +1057,10 @@ function irc:strip_color(s)
 end
 
 function irc:strip_style(s)
+	s = self:strip_color(s)
 	s = s:gsub("[\2\15\22\29\31]", "")
 	-- bold, color reset, reverse color, italics, underline
-	return self:strip_color(s)
+	return s
 end
 
 return irc
