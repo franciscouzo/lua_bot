@@ -11,6 +11,9 @@ return function(irc)
 		irc:add_command("style", color, function(irc, state, channel, msg)
 			return irc:color(irc:strip_color(msg), color)
 		end, false)
+		irc:add_command("style", color .. "_background", function(irc, state, channel, msg)
+			return irc:color(irc:strip_color(msg), color)
+		end, false)
 	end
 
 	local styles = {{"bold", "\2"}, {"reverse", "\22"}, {"italics", "\29"}, {"underline", "\31"}}
