@@ -9,10 +9,10 @@ local patterns = {
 return function(irc)
 	for color, color_code in pairs(irc.colors) do
 		irc:add_command("style", color, function(irc, state, channel, msg)
-			return irc:color(irc:strip_color(msg), color)
+			return irc:color(irc:strip_foreground_color(msg), color)
 		end, false)
 		irc:add_command("style", color .. "_background", function(irc, state, channel, msg)
-			return irc:color(irc:strip_color(msg), nil, color)
+			return irc:color(irc:strip_background_color(msg), nil, color)
 		end, false)
 	end
 
