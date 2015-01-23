@@ -972,16 +972,16 @@ irc.colors = {
 	lightblue = 11, blue = 12, purple = 13, gray = 14, lightgray = 15
 }
 function irc:color(s, color, background)
-	if not self.colors[color] or (background and not self.colors[background]) then
+	if not (self.colors[color] or self.colors[background]) then
 		return
 	end
-	local ret = "\003"
-	if background then
-		ret = ret .. self.colors[color] .. "," .. self:fix_color(self.colors[background], s)
-	else
-		ret = ret .. self:fix_color(self.colors[color], s)
+	local color_code = self.colors[color] or ""
+
+	if self.colors[background] then
+		color_code = color_code .. "," .. self.colors[background]
 	end
-	return ret .. "\003"
+
+	return "\003" .. self:fix_color(color_code, s) .. "\003"
 end
 
 function irc:fix_color(color_code, s)
@@ -1054,6 +1054,10 @@ end
 
 function irc:strip_color(s)
 	return (s:gsub("\3%d?%d?,%d%d?", ""):gsub("\3%d%d?", ""):gsub("\3", ""))
+end
+
+function irc:strip_foreground_color(s)
+	return (s:gsub("\3%d?%d?,(%d%d?)", "\3,%1"):gsub("\3%d%d?", ""))
 end
 
 function irc:strip_style(s)
