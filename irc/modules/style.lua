@@ -21,7 +21,7 @@ return function(irc)
 		local style, style_code = unpack(style)
 		irc:add_command("style", style, function(irc, state, channel, msg)
 			return style_code .. msg .. style_code
-		end)
+		end, false)
 	end
 
 	irc:add_command("style", "strip_style", function(irc, state, channel, msg)
