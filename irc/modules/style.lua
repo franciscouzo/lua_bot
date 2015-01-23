@@ -12,7 +12,7 @@ return function(irc)
 			return irc:color(irc:strip_color(msg), color)
 		end, false)
 		irc:add_command("style", color .. "_background", function(irc, state, channel, msg)
-			return irc:color(irc:strip_color(msg), color)
+			return irc:color(irc:strip_color(msg), nil, color)
 		end, false)
 	end
 
