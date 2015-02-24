@@ -153,6 +153,24 @@ return function(irc)
 		return '"' .. out .. '"'
 	end, false)
 
+	irc:add_command("code", "try", function(irc, state, channel, msg)
+		local success, ret = pcall(irc.run_command, irc, state, channel, msg)
+		if success then
+			return ret
+		else
+			return ""
+		end
+	end, true)
+	irc:add_command("code", "try_except", function(irc, state, channel, msg)
+		local try, except = msg:match("(.+) except (.+)")
+		local success, ret = pcall(irc.run_command, irc, state, channel, try)
+		if success then
+			return ret
+		else
+			return irc:run_command(state, channel, except)
+		end
+	end, true)
+
 	-- misc
 
 	irc:add_command("code", "nothing", function()
