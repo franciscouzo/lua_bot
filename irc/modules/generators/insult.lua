@@ -13,7 +13,7 @@ return function(irc, state, channel, n)
 	if n then
 		n = math.max(n, 1)
 		n = math.min(n, 20)
-		local adjectives = {unpack(insult_adjectives)} -- cheap's man copy
+		local adjectives = {unpack(insult_adjectives)} -- cheap man's copy
 		for i = 1, n do
 			words[#words + 1] = table.remove(adjectives, math.random(#adjectives))
 		end
