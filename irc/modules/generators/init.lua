@@ -9,6 +9,7 @@ return function(irc)
 	irc:add_command("generators", "buzzfeed",               require("irc.modules.generators.buzzfeed"),               false)
 	irc:add_command("generators", "ineedaprompt",           require("irc.modules.generators.ineedaprompt"),           false)
 	irc:add_command("generators", "android_name_generator", require("irc.modules.generators.android_name_generator"), false)
+	irc:add_command("generators", "shakespeare",            require("irc.modules.generators.shakespeare"),            false)
 	irc:add_command("generators", "insult",                 require("irc.modules.generators.insult"),                 false, "+int...")
 	irc:add_command("generators", "bullshit",               require("irc.modules.generators.bullshit"),               false, "+int...")
 
