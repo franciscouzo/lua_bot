@@ -243,11 +243,11 @@ local buzzfeed_words = {
 }
 
 local formulas = {
-    {'num', {'Painful Truths', 'Problems', 'Things'}, 'Only', 'people', 'Will Understand'},
-    {'The', 'num', 'adjest', 'noun', 'Of', 'time'},
-    {'The', 'num', 'adjest', 'noun', 'prep'},
-    {{'The', ''}, 'num', 'noun', 'That', 'noun_desc'},
-    {'num', 'people', 'Who', 'people_desc'}
+	{'num', {'Painful Truths', 'Problems', 'Things'}, 'Only', 'people', 'Will Understand'},
+	{'The', 'num', 'adjest', 'noun', 'Of', 'time'},
+	{'The', 'num', 'adjest', 'noun', 'prep'},
+	{{'The', ''}, 'num', 'noun', 'That', 'noun_desc'},
+	{'num', 'people', 'Who', 'people_desc'}
 }
 
 return function()

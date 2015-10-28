@@ -1,7 +1,7 @@
 local qrcode = require("irc.modules.qrcode.qrencode").qrcode
 
 return function(irc)
-    irc:add_command("qrcode", "qrcode_image", function(irc, state, channel, msg)
+	irc:add_command("qrcode", "qrcode_image", function(irc, state, channel, msg)
 		local matrix = select(2, assert(qrcode(msg)))
 		local padding = 2
 
@@ -15,5 +15,5 @@ return function(irc)
 			end
 			irc:privmsg(channel, table.concat(line))
 		end
-    end, false)
+	end, false)
 end
