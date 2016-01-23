@@ -272,7 +272,7 @@ return function(irc)
 		end
 	end
 	irc:add_hook("hooks", "on_rpl_isupport", function(irc, prefix, nick, ...)
-		args = {...}
+		local args = {...}
 		for i = 1, #args - 1 do -- " :Are supported by this server"
 			parse_isupport_token(irc, args[i])
 		end
