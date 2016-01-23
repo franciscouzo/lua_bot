@@ -30,8 +30,7 @@ local irc = {
 		--["intents"] = true, -- base ircv3.2
 		["account-tag"] = true, --[[["batch"] = true,]] ["cap-notify"] = true, -- optional ircv3.2
 		["chghost"] = true, ["invite-notify"] = true, ["userhost-in-names"] = true,
-		["self-message"] = true, ["server-time"] = true,
-		
+		["self-message"] = true, ["server-time"] = true
 	},
 	isupport_default = {
 		CASEMAPPING = "rfc1459",
@@ -60,7 +59,7 @@ function irc:new(config)
 
 	self.commands = {}
 	self.module_list = {}
-	
+
 	self.queue = {}
 	if self.config.flood_control then
 		self.queue_time = {}
@@ -222,7 +221,7 @@ function irc:manage_queue()
 			break
 		end
 	end
-	
+
 	local k, v = self.linda:receive(0, "send")
 	if k then
 		self:send(unpack(v))
@@ -269,7 +268,7 @@ function irc:run_line(line)
 	if not self:call_hook("on_cmd", command:upper(), utils.deepcopy(state), unpack(args)) then
 		self:call_hook("on_cmd_" .. command:lower(), utils.deepcopy(state), unpack(args))
 	end
-	
+
 	if tonumber(command) then
 		local rpl = replies[tonumber(command)]
 		if rpl then
@@ -313,7 +312,7 @@ function irc:add_hook(module, hook, f, threaded, pos)
 		return nil, "Invalid module"
 	end
 	--print(("%20s | %30s | %s"):format(module, hook, tostring(threaded)))
-	
+
 	local id = hook_counter
 	hook_counter = hook_counter + 1
 	if not self.hook_order[hook] then
@@ -355,12 +354,12 @@ end
 
 function irc:hook_thread(func, ...)
 	local irc = self:copy_for_lanes()
-	
+
 	function irc:send(...)
 		self.linda:send("send", {...})
 	end
 	irc.threaded = true
-	
+
 	local thread = lanes.gen("*", func)(irc, ...)
 	table.insert(self.threads, thread)
 end
@@ -408,7 +407,7 @@ function irc:add_command(module, command, func, threaded, ...)
 	if not self.module_list[module] then
 		self.module_list[module] = {threaded=true}
 	end
-	
+
 	table.insert(self.module_list[module], command)
 
 	self.commands[command] = {func=func, module=module, threaded=threaded, arguments = {...}}
@@ -421,7 +420,7 @@ function irc:del_command(command)
 		return nil, "Nonexistent command " .. command
 	end
 	local module = self.commands[command].module
-	
+
 	for i, cmd in ipairs(self.module_list[module]) do
 		if cmd == command then
 			self.module_list[module][i] = nil
@@ -522,7 +521,7 @@ function irc:parse_modes(channel, modes, user_change)
 	local i = 2
 
 	local channel = self:get_channel(channel)
-	
+
 	for c in modes[1]:gmatch(".") do
 		if c == "+" or c == "-" then
 			direction = ("+-"):find(c, 1, 1)
@@ -649,7 +648,7 @@ local default_nick = {modes = {}, user = "", host = "", account = nil, realname 
 function irc:new_user(channel_name, nick, options)
 	channel_name = self:lower(channel_name)
 	channel = self:get_channel(channel_name, true)
-	
+
 	local user = utils.deepcopy(default_nick)
 	user.nick = nick
 	for k, v in pairs(options or {}) do
@@ -1006,7 +1005,7 @@ function irc:optimize_format(s)
 	s = s:gsub("\022+", function(r) return ("\022"):rep(#r % 2) end) -- reverse color
 
 	s = s:gsub("\015+", "\015") -- color reset
-	
+
 	-- \003 optimize colors
 	local split = utils.split(s, "\003")
 
@@ -1019,7 +1018,7 @@ function irc:optimize_format(s)
 		local str = split[i]
 		local foreground = str:match("^%d%d?")
 		local background = str:match("^,%d%d?", 1 + (foreground and #foreground or 0))
-		local str = str:sub(1 + (foreground and #foreground or 0) + 
+		local str = str:sub(1 + (foreground and #foreground or 0) +
 		                        (background and #background or 0))
 		if foreground or background then
 			using_colors = true
@@ -1037,7 +1036,6 @@ function irc:optimize_format(s)
 					out = out .. background
 					last_background = background
 				end
-				
 			end
 		else
 			if using_colors then
