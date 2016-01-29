@@ -53,12 +53,12 @@ return function(irc)
 			local pattern = patterns[msg:lower()]
 			return utils.escape_list(pattern)
 		end
-		
+
 		local step, offset, pat, str = msg:match("(%d*) ?(%d*) ?(.-) (.+)")
-		
+
 		local step = tonumber(step) or 1
 		local offset = tonumber(offset) or 0
-		
+
 		assert(pat and str, "Insufficient arguments")
 		assert(str ~= "", "Empty string")
 		assert(step >= 0 and step <= #str, "Invalid step value")

@@ -14,7 +14,7 @@ return function(irc)
 		file:write(utils.pickle(karma))
 		file:close()
 	end
-	
+
 	irc:add_hook("karma", "on_cmd_privmsg", function(irc, state, channel, msg)
 		local nick, plus_or_minus = msg:sub(1, -3), msg:sub(-2)
 		nick = irc:lower(nick)

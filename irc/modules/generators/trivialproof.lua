@@ -116,7 +116,7 @@ return function(irc, state, channel)
 	local adjective = utils.random_choice(adjectives)
 
 	local intro = intro .. (adjective:match("^[aeiou]") and "n" or "")
-	
+
 	local text = ("The proof is trivial! %s %s %s whose elements are %s %s."):format(
 		intro,
 		adjective,

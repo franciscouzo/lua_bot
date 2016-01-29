@@ -40,7 +40,7 @@ local function rgb2irc(rgb)
 			nearest_i = i - 1
 		end
 	end
-	
+
 	return nearest_i
 end
 

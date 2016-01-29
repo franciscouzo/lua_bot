@@ -384,7 +384,7 @@ local utils = require("irc.utils")
 
 local build_headline = function()
 	local headline = utils.random_choice(headline_structures)
-	
+
 	headline = headline:gsub("%%(%w-)%%", function(word)
 		return utils.capitalize(utils.random_choice(words[word]))
 	end)
@@ -400,7 +400,7 @@ return function(irc, state, channel)
 	local article_title = build_headline()
 	--local description = utils.random_choice(words.subhead)
 	--local author = utils.random_choice(words.author)
-	
+
 	return article_title
 	--description .. ". —" .. author
 end

@@ -28,12 +28,6 @@ return function(irc)
 		return ("%s - %s"):format(result_url, content)
 	end, true)
 	irc:add_command("google", "youtube", function(irc, state, channel, msg)
-		local result_n, msg = msg:match("^(%d*) ?(.+)")
-
-		result_n = tonumber(result_n) or 1
-		result_n = math.max(1, result_n)
-		result_n = math.min(8, result_n)
-
 		local search_url = "https://gdata.youtube.com/feeds/api/videos"
 		local http = require("socket.http")
 		local url  = require("socket.url")
@@ -45,7 +39,7 @@ return function(irc)
 		local obj, pos, err = json.decode(response)
 		assert(not err, err)
 
-		local item = obj.data.items[result_n]
+		local item = obj.data.items[1]
 		local title = html.unescape(item.title)
 		return ("https://youtu.be/%s - [%i:%02i] %s"):format(item.id, item.duration / 60, item.duration % 60, title)
 	end, true)
@@ -61,7 +55,7 @@ return function(irc)
 		result_n = tonumber(result_n) or 1
 		result_n = math.max(1, result_n)
 		result_n = math.min(8, result_n)
-		
+
 		local search_url = "https://ajax.googleapis.com/ajax/services/search/images"
 
 		local http = require("socket.http")

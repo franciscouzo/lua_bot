@@ -12,7 +12,7 @@ return function(irc)
 		local http = require("socket.http")
 		http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
 		local url = require("socket.url")
-		
+
 		local language, code = msg:match("^(.-) (.+)$")
 		assert(language and code, "Insufficient arguments")
 		language = language:lower()

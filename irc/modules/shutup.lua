@@ -13,7 +13,7 @@ return function(irc)
 		end
 		return true
 	end)
-	
+
 	irc:add_command("shutup", "shut", function(irc, state, channel, msg, seconds)
 		if msg ~= "up" then
 			return

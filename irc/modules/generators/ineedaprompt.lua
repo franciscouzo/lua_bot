@@ -469,7 +469,7 @@ return function(irc, state, channel, msg)
 
 	local structure_array = {}
 	local amount = {noun=0, adjective=0, verb=0, adverb=0, location=0}
-	
+
 	local sentence = ""
 	local sentence_array = {}
 
@@ -503,7 +503,7 @@ return function(irc, state, channel, msg)
 		repeat
 			random_word = utils.random_choice(words[type])
 		until not inside(sentence_array, random_word)
-		
+
 		table.insert(sentence_array, {type, random_word})
 		amount[type] = amount[type] + 1
 	end
@@ -538,7 +538,7 @@ return function(irc, state, channel, msg)
 		local prev_type     = (sentence_array[i - 1] or {})[1]
 		local prev_two_type = (sentence_array[i - 2] or {})[1]
 		local next_type     = (sentence_array[i + 1] or {})[1]
-		
+
 		if (type == "adjective" or type == "noun") and prev_type ~= "adjective" and amount.noun >= 1 then
 			word = (word:lower():match("^[aeiou]") and " an " or " a ") .. word
 		end

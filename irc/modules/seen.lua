@@ -15,14 +15,14 @@ return function(irc)
 			file:close()
 		end
 	end)
-	
+
 	irc:add_hook("seen", "on_cmd_privmsg", function(irc, state, channel, msg)
 		local socket = require("socket")
 		local seen = irc.linda:get("seen.seen")
 		seen[irc:lower(state.nick)] = {at = socket.gettime(), msg = msg}
 		irc.linda:set("seen.seen", seen)
 	end)
-	
+
 	irc:add_command("seen", "seen", function(irc, state, channel, nick)
 		local seen = irc.linda:get("seen.seen")
 		nick = irc:lower(utils.strip(nick))

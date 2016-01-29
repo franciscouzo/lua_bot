@@ -10,7 +10,7 @@ return function(irc)
 		end
 		local time = socket.gettime()
 		active[channel][state.nick] = time
-		
+
 		for user, user_time in pairs(active[channel]) do
 			if time - user_time > irc:get_config("remove_unactive_after", channel) or 3600 then
 				active[channel][user] = nil

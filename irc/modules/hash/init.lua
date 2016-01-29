@@ -13,7 +13,7 @@ return function(irc)
 		h:process(msg)
 		return h:finish()
 	end, false)
-	
+
 	irc:add_command("hash", "hashes", function(irc, state, channel, msg)
 		local hash_list = {}
 		for hash in pairs(hashes) do

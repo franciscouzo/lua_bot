@@ -39,7 +39,7 @@ return function(irc)
 		end
 		return utils.escape_list(l)
 	end, false)
-	
+
 	irc:add_hook("ignore", "on_cmd_privmsg", function(irc, state, channel, msg)
 		if irc:admin_user_mode(state.nick, "v") then
 			return

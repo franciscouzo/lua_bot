@@ -183,7 +183,7 @@ return function(irc)
 		local font, msg = msg:match("^(.-) (.+)")
 		assert(font and msg, "Insufficient arguments")
 		assert(fonts[font], "Invalid font")
-		
+
 		local font = figlet.font(fonts_dir .. font .. ".flf")
 		for _, line in ipairs(figlet.ascii_art(msg, font, true, true)) do
 			if utils.strip(line) ~= "" then

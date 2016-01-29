@@ -64,7 +64,7 @@ return function(irc)
 		local hours,   seconds = math.floor(seconds / 3600), seconds % 3600
 		local minutes, seconds = math.floor(seconds / 60), seconds % 60
 		local seconds, milliseconds = math.floor(seconds), math.floor((seconds % 1) * 1000)
-		
+
 		if years >= 1 then
 			out = out .. ("%i year%s "):format(years, years == 1 and "" or "s")
 		end

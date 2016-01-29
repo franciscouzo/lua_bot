@@ -38,7 +38,7 @@ return function(irc)
 		local user = utils.random_choice_dict(irc.channels[channel].users)
 		return irc.channels[channel].users[user].nick
 	end, false)
-	
+
 	irc:add_command("misc", "button", function(irc, state, channel, msg)
 		assert(utils.strip(msg) ~= "", "Empty string")
 		local color, background, shadow, msg = msg:match("(%d*) ?(%d*) ?(%d*) ?(.+)")
@@ -46,10 +46,10 @@ return function(irc)
 		color      = irc:fix_color(tonumber(color) or 1)
 		background = irc:fix_color(tonumber(background) or 15)
 		shadow     = irc:fix_color(tonumber(shadow) or 14)
-		
+
 		local utf8 = require("utf8")
 		local len = utf8.len(irc:strip_style(msg)) + 4
-		
+
 		irc:privmsg(channel, ("\003,%i%s"):format(background, (" "):rep(len)))
 		irc:privmsg(channel, ("\003%i,%i  %s\003,%i  \003,%i "):format(color, background, msg, background, shadow))
 		irc:privmsg(channel, ("\003,%i%s\0030,%i "):format(background, (" "):rep(len), shadow))
@@ -58,7 +58,7 @@ return function(irc)
 
 	local function dice(msg)
 		local n, sides, modifier = msg:match("(%d+)d(%d+)([+-]?%d*)")
-		
+
 		n = assert(tonumber(n), "Invalid number")
 		sides = assert(tonumber(sides), "Invalid number")
 		modifier = tonumber(modifier) or 0
@@ -69,7 +69,7 @@ return function(irc)
 		assert(sides <= 100, "That's practically a sphere")
 		assert(modifier >= -10000, "Modifier is too low")
 		assert(modifier <=  10000, "Modifier is too big")
-		
+
 		local total = 0
 		local results = {}
 		for i = 1, n do
@@ -77,9 +77,9 @@ return function(irc)
 			results[i] = result
 			total = total + result
 		end
-		
+
 		local max = n * (sides + modifier)
-		
+
 		return {
 			total   = total,
 			results = results,
@@ -91,7 +91,7 @@ return function(irc)
 	end, false)
 	irc:add_command("misc", "dice_f", function(irc, state, channel, msg)
 		local result = dice(msg)
-		
+
 		return ("Total %i / %i [%.2f%%] :: Results [%s]"):format(
 			result.total,
 			result.max,
@@ -427,16 +427,16 @@ return function(irc)
 	irc:add_command("misc", "lolcat", function(irc, state, channel, msg)
 		msg = utils.strip(msg)
 		assert(msg ~= "", "Empty string")
-		
+
 		local http = require("socket.http")
 		local url = require("socket.url")
 		local uri = "http://speaklolcat.com/?from=" .. url.escape(msg)
 		local response, response_code = http.request(uri)
 		assert(response_code == 200, "Error requesting page")
-		
+
 		local translation = response:match("<div id=\"text\">.-<p>([^>]+)</p>")
 		assert(translation, "Couldn't find translation")
-		
+
 		return translation
 	end, true)
 	irc:add_command("misc", "screenshot", function(irc, state, channel, uri)
@@ -453,7 +453,7 @@ return function(irc)
 			local response = http.request(
 				"http://api.page2images.com/restfullink" ..
 				"?p2i_url=" .. url.escape(uri) ..
-				"&p2i_key=" .. api_key .. 
+				"&p2i_key=" .. api_key ..
 				"&p2i_wait=25" .. -- looks like it doesn't works
 				"&p2i_size=1024x768"
 			)

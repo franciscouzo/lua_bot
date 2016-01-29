@@ -45,20 +45,20 @@ return function(irc)
 			return tostring(f(unpack(args)))
 		end, false)
 	end
-	
+
 	for func, func in ipairs(math_func_arguments) do
 		irc:add_command("code", func, function(irc, state, channel, ...)
 			return tostring(math[func](...))
 		end, false, "float")
 	end
-	
+
 	irc:add_command("code", "atan2", function(irc, state, channel, y, x)
 		return tostring(math.atan2(y, x))
 	end, false, "float", "float")
 	irc:add_command("code", "ldexp", function(irc, state, channel, y, x)
 		return tostring(math.atan2(y, x))
 	end, false, "float", "float")
-	
+
 	irc:add_command("code", "random", function(irc, state, channel, n1, n2)
 		return tostring(math.random(unpack({n1, n2})))
 	end, false, "float...")
@@ -179,7 +179,7 @@ return function(irc)
 	irc:add_command("code", "error", function(irc, state, channel, msg)
 		error(msg)
 	end, false)
-	
+
 	require("irc.modules.code.bit")(irc)
 	require("irc.modules.code.string")(irc)
 	require("irc.modules.code.list")(irc)

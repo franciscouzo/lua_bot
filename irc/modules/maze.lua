@@ -48,7 +48,7 @@ return function(irc)
 		-- remove borders from start and end
 		map[1][2]                  = {right=false, bottom=false, captured=false, backtrack=0}
 		map[width - 1][height - 1] = {right=false, bottom=true,  captured=false, backtrack=0}
-		
+
 		local playerstart = {2, 2}
 		local playerexit  = {width, height}
 

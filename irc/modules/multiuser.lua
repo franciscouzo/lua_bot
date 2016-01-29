@@ -22,7 +22,7 @@ return function(irc)
 
 		return utils.escape_list(out)
 	end, false)
-	
+
 	irc:add_command("multiuser", "multichannel", function(irc, state, channel, ...)
 		-- Users that are in atleast `atleast_channels` channels
 		-- If you put a channel twice, it will count as the user is in two channels

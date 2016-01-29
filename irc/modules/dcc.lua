@@ -54,7 +54,7 @@ dcc.dcc_download = function(irc, state, channel, filename)
 		used_ports[port] = true
 		irc.linda:set("dcc.used_ports", used_ports)
 	end
-	
+
 	local file = assert(io.open(irc:get_config("dcc", channel).folder .. filename, "r"))
 	local current = file:seek()
 	local filesize = file:seek("end")
@@ -65,7 +65,7 @@ dcc.dcc_download = function(irc, state, channel, filename)
 	local _, port = server:getsockname()
 
 	local ip = numeric_ip(irc:get_config("dcc", channel).ip)
-	
+
 	irc:ctcp_privmsg(state.nick, ("DCC SEND %s %s %s %s"):format(filename, ip, port, filesize))
 
 	server:settimeout(irc:get_config("dcc", channel).timeout or 60)
@@ -127,7 +127,7 @@ return function(irc)
 			end)()
 		end
 	end)]]
-	
+
 	irc:add_command("dcc", "dcc_list", dcc.dcc_list, false)
 	irc:add_command("dcc", "dcc_download", dcc.dcc_download, true)
 end

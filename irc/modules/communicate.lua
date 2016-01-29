@@ -10,7 +10,7 @@ return function(irc)
 		assert(not irc.linda:get("communicate." .. bots_nick), "This bot has a job running already")
 
 		irc:privmsg(bots_nick, command)
-		
+
 		irc.linda:set("communicate." .. bots_nick, true)
 		local key, response = irc.linda:receive(timeout, "communicate.response." .. bots_nick)
 		assert(key and response, bots_nick .. " timeout")
@@ -20,7 +20,7 @@ return function(irc)
 	irc:add_hook("communicate", "on_cmd_privmsg", function(irc, state, channel, msg)
 		local nick = irc:lower(state.nick)
 		local communicate = irc.linda:receive(0, "communicate." .. nick)
-		
+
 		if communicate then
 			irc.linda:set("communicate.response." .. nick, msg)
 		end

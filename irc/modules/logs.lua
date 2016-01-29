@@ -63,7 +63,7 @@ return function(irc)
 			log(irc, state, channel, ("-%s- %s"):format(state.nick or state.prefix, msg))
 		end
 	end)
-	
+
 	irc:add_hook("logs", "on_rpl_topic", function(irc, state, channel, topic)
 		log(irc, state, channel, ("Topic for %s is %s"):format(channel, topic))
 	end)

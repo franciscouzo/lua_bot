@@ -14,7 +14,7 @@ return function(irc)
 			logstats = log_stat and "1" or "0",
 			shorturl = custom_url
 		}
-		
+
 		local http_data = {}
 		for k, v in pairs(data) do
 			table.insert(http_data, url.escape(k) .. "=" .. url.escape(v))

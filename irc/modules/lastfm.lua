@@ -41,7 +41,7 @@ return function(irc)
 		local http = require("socket.http")
 		local url = require("socket.url")
 		local response, response_code = http.request(
-			"http://ws.audioscrobbler.com/2.0/" .. 
+			"http://ws.audioscrobbler.com/2.0/" ..
 			"?method=user.getRecentTracks" ..
 			"&format=json" ..
 			"&user=" .. url.escape(user) ..
@@ -89,7 +89,7 @@ return function(irc)
 		local http = require("socket.http")
 		local url = require("socket.url")
 		local response, response_code = http.request(
-			"http://ws.audioscrobbler.com/2.0/" .. 
+			"http://ws.audioscrobbler.com/2.0/" ..
 			"?method=user.getTopArtists" ..
 			"&format=json" ..
 			"&user=" .. url.escape(user) ..

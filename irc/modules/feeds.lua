@@ -97,7 +97,7 @@ return function(irc)
 		assert(feeds[url].channels[channel], "Channel is not subscribed to this feed")
 
 		feeds[url].channels[channel] = nil
-		
+
 		if not next(feeds[url].channels) then
 			feeds[url] = nil
 		end
@@ -106,7 +106,7 @@ return function(irc)
 		save_feeds(feeds)
 		irc:notice(state.nick, "ok " .. state.nick)
 	end, false)
-	
+
 	irc:add_command("feeds", "feeds_list", function(irc, state, channel, msg)
 		channel = irc:lower(channel)
 		local urls = {}

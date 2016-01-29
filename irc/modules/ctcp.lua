@@ -26,17 +26,17 @@ return function(irc)
 
 		local versions = irc.linda:get("ctcp.versions")
 		local version_count = {}
-		
+
 		for mask, version in pairs(versions) do
 			version_count[version] = (version_count[version] or 0) + 1
 		end
-		
+
 		local sorted_count = {}
 		for version, count in pairs(version_count) do
 			table.insert(sorted_count, {version, count})
 		end
 		table.sort(sorted_count, function(a, b) return a[2] > b[2] end)
-		
+
 		local out = {}
 		for i, version_count in ipairs(sorted_count) do
 			local version, count = unpack(version_count)

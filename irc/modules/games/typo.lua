@@ -35,7 +35,7 @@ return function(irc)
 
 		num_before_repeat = math.max(5, num_before_repeat)
 		num_before_repeat = math.min(250, num_before_repeat)
-		
+
 		local words = {}
 
 		for line in io.lines("data/word_list") do
@@ -136,7 +136,7 @@ return function(irc)
 		table.remove(game.last_words, game.num_before_repeat + 1)
 
 		irc.linda:set("typo.games." .. channel, game)
-		
+
 		return "Last word skipped, new word: " .. irc:color(word, "red")
 	end, false)
 end

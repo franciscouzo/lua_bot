@@ -25,7 +25,7 @@ return function(irc)
 			if not msg_no_prefix then
 				return
 			end
-			
+
 			local trigger, response = unpack(utils.split(msg_no_prefix, reply and "<reply>" or "<action>"))
 			trigger = utils.strip(trigger:gsub("[^%w]", ""):lower())
 			response = utils.strip(response)

@@ -100,24 +100,24 @@ return function(irc)
 		config_name = config_name ~= "" and config_name or arg[1]
 		irc.config = dofile(config_name)
 	end, false)
-	
+
 	local function multimode_format(plus_or_minus, mode, n, users)
 		plus_or_minus = plus_or_minus and "+" or "-"
-		
+
 		local result = {}
 		for i, block in ipairs(utils.blocks(users, n)) do
 			result[i] = plus_or_minus .. mode:rep(#block) .. " " .. table.concat(block, " ")
 		end
 		return result
 	end
-	
+
 	local modes = {
 		op      = {true,  "o"},
 		deop    = {false, "o"},
 		voice   = {true,  "v"},
 		devoice = {false, "v"}
 	}
-	
+
 	for cmd, mode in pairs(modes) do
 		irc:add_command("utils", cmd, function(irc, state, channel, ...)
 			channel = irc:lower(channel)
@@ -161,7 +161,7 @@ return function(irc)
 			end
 		end, false)
 	end
-	
+
 	irc:add_command("utils", "kick", function(irc, state, channel, args)
 		channel = irc:lower(channel)
 		local nick, reason = unpack(utils.split(args, " ", 1))

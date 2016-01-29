@@ -188,14 +188,14 @@ return function(irc)
 	irc:add_command("list", "list.foldl1", function(irc, state, channel, msg)
 		local f, list = assert(utils.list_arguments(msg))
 		assert(#list >= 2, "Insufficient arguments")
-		
+
 		local z = list[1]
 		local i, l = 2, #list
 		repeat
 			z = irc:run_command(state, channel, f .. " " .. z .. " " .. list[i])
 			i = i + 1
 		until i > l
-		
+
 		return z
 	end, true)
 	irc:add_command("list", "list.foldl", function(irc, state, channel, msg)

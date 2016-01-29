@@ -32,10 +32,10 @@ return function(irc)
 		irc.linda:set("tell.tell", tell)
 		save_tell(tell)
 	end
-	
+
 	irc:add_hook("tell", "on_cmd_join", tell_message)
 	irc:add_hook("tell", "on_cmd_privmsg", tell_message)
-	
+
 	irc:add_command("tell", "tell", function(irc, state, channel, msg)
 		local nick, msg = msg:match("^(.-) (.+)$")
 		assert(nick and msg, "Insufficient arguments")

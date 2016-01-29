@@ -4,7 +4,7 @@ return function(irc)
 	irc:add_command("honeycomb", "honeycomb_start", function(irc, state, channel, ...)
 		local players = {[irc:lower(state.nick)] = true}
 		local order_players = {state.nick}
-		
+
 		channel = irc:lower(channel)
 
 		local games = irc.linda:get("games.honeycomb.games." .. channel) or {}
@@ -40,7 +40,7 @@ return function(irc)
 		irc.linda:set("games.honeycomb.games." .. channel, games)
 		return ("Stack: %i, it's %s's turn"):format(stack, order_players[1])
 	end, false, "string...")
-	
+
 	local function honeycomb(irc, state, channel, s)
 		channel = irc:lower(channel)
 		local games = irc.linda:get("games.honeycomb.games." .. channel)
@@ -92,7 +92,7 @@ return function(irc)
 		end
 	end)
 	irc:add_command("honeycomb", "honeycomb", honeycomb, false)
-	
+
 	irc:add_command("honeycomb", "honeycomb_stop", function(irc, state, channel, msg)
 		channel = irc:lower(channel)
 		local games = irc.linda:get("games.honeycomb.games." .. channel)

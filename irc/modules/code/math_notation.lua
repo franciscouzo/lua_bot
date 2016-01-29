@@ -19,7 +19,7 @@ local operators = {
 	{"cosh",  math.cosh,  1}, {"acosh", math.asinh, 1},
 	{"tan",   math.tan,   1}, {"atan",  math.atan,  1},
 	{"tanh",  math.tanh,  1}, {"atanh", math.atanh, 1},
-	
+
 	{"ln",    math.log,   1}, {"log10", math.log10, 1},
 	{"exp",   math.exp,   1},
 	{"frexp", math.frexp, 1}, {"ldexp", math.ldexp, 1},
@@ -38,7 +38,7 @@ local operators = {
 	{"/",     function(n, m) return n / m end, 2},
 	{"%",     function(n, m) return n % m end, 2},
 	{"^",     function(n, m) return n ^ m end, 2},
-	
+
 	{"hypot", function(n, m) return math.sqrt(n^2 + m^2) end, 2},
 	{"log",   function(n, m) return math.log(n) / math.log(m) end, 2}, -- lua5.1 compat
 	{"min",   math.min,   2}, {"max", math.max, 2},

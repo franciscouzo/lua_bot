@@ -50,7 +50,7 @@ end
 
 local function boss()
 	local r = math.random(4)
-	
+
 	local function department()
 		return random_choice({
 			"Human Resources", "Controlling", "Internal Audit", "Legal",
@@ -524,7 +524,6 @@ local function proposition()
 	if r <= 5 then
 		return faukon() .. " " .. eventual_adverb() .. person_verb_and_ending(True) .. eventual_postfixed_adverb()
 	elseif r <= 50 then
-		
 		return "the " .. person(plural) .. " " .. eventual_adverb() .. person_verb_and_ending(plural) .. eventual_postfixed_adverb()
 	else
 		return add_random_article(thing(plural), plural) .. " " .. eventual_adverb() .. thing_verb_and_ending(plural) .. eventual_postfixed_adverb()
