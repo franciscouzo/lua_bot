@@ -39,7 +39,7 @@ local function check_win(game, player)
 				if count1 == game.k or count2 == game.k then
 					return true
 				end
-				
+
 				diagonal1 = diagonal1 + ((game.board[y + i]:sub(y + i, y + i):match(player)) and 1 or 0)
 				diagonal2 = diagonal2 + ((game.board[y + i]:sub(game.k - (x + i) + 1, game.k - (x + i) + 1):match(player)) and 1 or 0)
 			end
@@ -86,7 +86,7 @@ return function(irc)
 		-- q: first turn's stones
 
 		gravity = gravity and gravity >= 1 or false
-		
+
 		m = m or 3
 		n = n or m
 
@@ -128,7 +128,7 @@ return function(irc)
 		irc.linda:set("mnkpq.games", games)
 		show_board(irc, channel, game)
 	end, false, "string", "+int...")
-	
+
 	local function mnkpq(irc, state, channel, xy_list)
 		local games = assert(irc.linda:get("mnkpq.games"), "No games taking place")
 		local game, game_i
@@ -140,7 +140,7 @@ return function(irc)
 				break
 			end
 		end
-		
+
 		assert(game, "You're not playing")
 		assert(irc:lower(channel) == game.channel, "Invalid channel")
 
@@ -189,7 +189,7 @@ return function(irc)
 
 		return ret
 	end
-	
+
 	irc:add_hook("mnkpq", "on_cmd_privmsg", function(irc, state, channel, xy_list)
 		msg = utils.strip(xy_list)
 		for x_y in xy_list:gmatch("[^,]+") do
@@ -203,7 +203,7 @@ return function(irc)
 			irc:privmsg(channel, result)
 		end
 	end)
-	
+
 	irc:add_command("mnkpq", "mnkpq", mnkpq, false)
 	irc:add_command("mnkpq", "mnkpq_stop", function(irc, state, channel, msg)
 		channel = irc:lower(channel)
