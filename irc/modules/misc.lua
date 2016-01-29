@@ -357,6 +357,18 @@ return function(irc)
 		assert(irc:admin_user_mode(state.nick, "o"), "User is not in the sudoers file. This incident will be reported")
 		return irc:run_command(state, channel, command)
 	end, true)
+	local start_time = require("socket").gettime()
+	irc:add_command("misc", "uptime", function(irc, state, channel, msg)
+		local socket = require("socket")
+
+		local uptime = socket.gettime() - start_time
+		uptime = math.floor(uptime)
+
+		uptime = irc:run_command(state, channel, "format_seconds " .. tonumber(uptime))
+		uptime = uptime or (math.floor(uptime) .. " second" .. (uptime == 1 and "" or "s"))
+
+		return tostring(uptime)
+	end, false)
 	irc:add_command("misc", "ip", function(irc, state, channel, domain)
 		local socket = require("socket")
 		return (assert(socket.dns.toip(domain)))
