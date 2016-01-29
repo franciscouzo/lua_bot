@@ -15,7 +15,7 @@ function utils:rstrip()
 end
 
 function utils.escape_pattern(s)
-    s = s:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1")
+	s = s:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1")
 	s = s:gsub("%z", "%%z")
 	return s
 end
@@ -155,11 +155,11 @@ function utils.parse_arguments(s, ...)
 	local types = {
 		["string"] = true,
 		["int"]   = true, ["+int"]   = true, ["-int"]   = true,
-		["float"] = true, ["+float"] = true, ["-float"] = true, 
+		["float"] = true, ["+float"] = true, ["-float"] = true,
 	}
 
 	local three_dots = args[#args]:match("(.+)%.%.%.")
-	
+
 	for i, arg in ipairs(args) do
 		local three_dots_match = (arg):match("(.+)%.%.%.")
 		if not types[arg] and (three_dots_match and not types[three_dots_match]) then
@@ -249,11 +249,11 @@ function utils:e_split(delimiter, max, escape_char)
 	assert(delimiter ~= "")
 	assert(max == nil or max >= 1)
 	assert(#escape_char == 1)
-	
+
 	local t = {}
 	local sub = ""
 	local escaped = false
-	
+
 	for c in self:gmatch(".") do
 		if escaped then
 			if c ~= delimiter and c ~= escape_char then
@@ -422,7 +422,7 @@ function utils.format(s, callback1, callback2, open, close, escape_char)
 	if sub ~= "" or depth ~= 0 then
 		return
 	end
-	
+
 	if middle ~= "" then
 		result = result .. callback2(middle)
 	end
@@ -467,7 +467,7 @@ end
 
 function utils.shuffled(t)
 	local n, order, result = #t, {}, {}
-	
+
 	for i = 1, n do
 		order[i] = {math.random(), i}
 	end
@@ -495,11 +495,11 @@ end
 
 
 local Pickle = {
-	clone = function (t) local nt = {}; for i, v in pairs(t) do nt[i] = v end return nt end 
+	clone = function (t) local nt = {}; for i, v in pairs(t) do nt[i] = v end return nt end
 }
 
 function Pickle:pickle_(root)
-	if type(root) ~= "table" then 
+	if type(root) ~= "table" then
 		error("can only pickle tables, not " .. type(root) .. "s")
 	end
 	self._tableToRef = {}
@@ -528,12 +528,12 @@ function Pickle:value_(v)
 	elseif vtype == "boolean" then return tostring(v) -- why the fuck didn't this library already support booleans
 	elseif vtype == "table" then return "{" .. self:ref_(v) .. "}"
 	else --error("pickle a "..type(v).." is not supported")
-	end  
+	end
 end
 
 function Pickle:ref_(t)
 	local ref = self._tableToRef[t]
-	if not ref then 
+	if not ref then
 		if t == self then error("can't pickle the pickle class") end
 		table.insert(self._refToTable, t)
 		ref = table.getn(self._refToTable)
@@ -552,7 +552,7 @@ function utils.unpickle(s)
 	end
 	local gentables = loadstring("return " .. s)
 	local tables = gentables()
-	
+
 	for _, t in ipairs(tables) do
 		local tcopy = {}; for i, v in pairs(t) do tcopy[i] = v end
 		for i, v in pairs(tcopy) do
