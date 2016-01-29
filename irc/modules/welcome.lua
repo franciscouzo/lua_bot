@@ -14,7 +14,7 @@ return function(irc)
 		file:write(utils.pickle(welcomes))
 		file:close()
 	end
-	
+
 	irc:add_hook("welcome", "on_cmd_join", function(irc, state, channel)
 		channel = irc:lower(channel)
 		if irc:lower(state.nick) ~= irc:lower(irc.nick) then -- we don't want to welcome ourselves
@@ -25,7 +25,7 @@ return function(irc)
 			end
 		end
 	end, true)
-	
+
 	irc:add_command("welcome", "welcome", function(irc, state, channel, msg)
 		channel = irc:lower(channel)
 		local welcomes = irc.linda:get("welcome.welcomes")
