@@ -12,6 +12,9 @@ local CleverbotSession = {
 }
 
 function CleverbotSession:new()
+	local http = require("socket.http") -- fucking
+	http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
+
 	local o = setmetatable({}, self)
 	self.__index = self
 
@@ -20,6 +23,9 @@ function CleverbotSession:new()
 		islearning="1", cleanstate="false"
 	}
 
+	local _, _, headers = http.request('http://www.cleverbot.com')
+
+	o.cookie = headers['set-cookie']:match("[^;]+")
 	return o
 end
 
@@ -57,7 +63,7 @@ function CleverbotSession:ask(message)
 		url = self.url,
 		source = ltn12.source.string(data),
 		headers = {
-			-- send cookies
+			["Cookie"] = self.cookie,
 			["content-type"] = "text/plain",
 			["content-length"] = tostring(#data)
 		},
