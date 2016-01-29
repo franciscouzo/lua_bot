@@ -65,7 +65,7 @@ return function(irc)
 				irc:update_user(state.nick, "account", state.tags.account ~= nil and state.tags.account or nil)
 			end
 		end
-		
+
 		local date = os.date("%X", state.time)
 		print(("[%s] server: %s"):format(date, ansi.mirc_to_ansi(ansi.strip(state.line))))
 	end)
@@ -167,7 +167,7 @@ return function(irc)
 			-- unknown mechanism
 		end
 	end
-	
+
 	irc:add_hook("hooks", "on_rpl_saslmechs", function(irc, state, nick, mechanisms)
 		irc.sasl_authentication_mechanisms = {}
 		for mechanism in ipairs(utils.split(mechanisms, ",")) do
@@ -192,7 +192,7 @@ return function(irc)
 		end
 		irc:send("AUTHENTICATE", "*")
 	end)
-	
+
 	irc:add_hook("hooks", "on_rpl_welcome", function(irc)
 		local socket = require("socket")
 		if irc.config.nickserv_pass then
@@ -239,7 +239,7 @@ return function(irc)
 		end
 
 		v = v:gsub("\\x(%x%x)", function(s) return string.char(tonumber(s, 16)) end)
-		
+
 		if v == "" then
 			if k == "EXCEPT" or k == "INVEX" then
 				irc.isupport[k] = irc.isupport_default[k]
@@ -266,7 +266,7 @@ return function(irc)
 		else
 			irc.isupport[k] = tonumber(v) or v
 		end
-		
+
 		if k == "NAMESX" or k == "UHNAMES" then
 			irc:send("PROTOCTL", k)
 		end
@@ -332,7 +332,7 @@ return function(irc)
 		irc:update_user(state.nick, "account", account ~= "*" and account or nil)
 	end)
 	irc:add_hook("hooks", "on_cmd_away", function(irc, state, seconds_or_away, away)
-		-- KineIRCd <nick> <seconds away> :<message> 
+		-- KineIRCd <nick> <seconds away> :<message>
 		away = away or seconds_or_away
 		if not (state.nick and away) then
 			return -- server command
