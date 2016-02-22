@@ -943,7 +943,7 @@ function irc:join(channels, keys)
 
 	for i = 1, #send_channels do
 		local channels = send_channels[i]
-		local keys = send_keys[1]
+		local keys = send_keys[i]
 		self:send("JOIN", table.concat(channels, ","), table.concat(keys, ","))
 	end
 
