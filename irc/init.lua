@@ -934,8 +934,8 @@ function irc:join(channels, keys)
 		buckets[#buckets] = buckets[#buckets] + #channel + #key + 2
 		if buckets[#buckets] > 300 then
 			buckets[#buckets + 1] = 0
-			send_channels[#buckets] = {}
-			send_keys[#buckets] = {}
+			send_channels[#buckets + 1] = {}
+			send_keys[#buckets + 1] = {}
 		end
 		table.insert(send_channels[#buckets], channel)
 		table.insert(send_keys[#buckets], key)
