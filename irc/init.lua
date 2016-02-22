@@ -932,7 +932,7 @@ function irc:join(channels, keys)
 		end
 
 		buckets[#buckets] = buckets[#buckets] + #channel + #key + 2
-		if buckets[#buckets] > 300 then
+		if buckets[#buckets] > 300 or send_channels[#buckets] >= 8 then
 			buckets[#buckets + 1] = 0
 			send_channels[#buckets + 1] = {}
 			send_keys[#buckets + 1] = {}
