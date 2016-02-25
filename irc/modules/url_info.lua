@@ -23,7 +23,7 @@ local function youtube_info(irc, state, channel, yt_id)
 		local title = data.title
 		local uploader = data.uploader
 		local uploaded = data.uploaded:match("^%d+%-%d+%-%d+")
-		
+
 		local duration = irc:run_command(state, channel, "format_seconds " .. tonumber(data.duration))
 		duration = duration or (math.floor(data.duration) .. " second" .. (data.duration == 1 and "" or "s"))
 
@@ -31,7 +31,7 @@ local function youtube_info(irc, state, channel, yt_id)
 		local views = tonumber(data.viewCount)
 		local likes = tonumber(data.likeCount)
 		local dislikes = tonumber(data.ratingCount) - tonumber(data.likeCount)
-		
+
 		return ("%s | %s | %s | %s | %i comment%s, %i view%s, %i like%s, %i dislike%s"):format(
 			title, uploader, uploaded, duration,
 			comments, comments == 1 and "" or "s",
