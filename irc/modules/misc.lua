@@ -305,12 +305,12 @@ return function(irc)
 		for i = 1, math.min(#from_letters, #to_letters) do
 			silly_texts[k][from_letters[i]] = to_letters[i]
 		end
-		silly_texts.leet = {
-			a = "4", e = "3", t = "+", s = "z", S = "Z", A = "4", o = "0",
-			O = "0", l = "1", y = "j", H = "|-|", W = "|\\/|", D = "|D",
-			V = "\\/", x = "><"
-		}
 	end
+	silly_texts.leet = {
+		a = "4", e = "3", t = "+", s = "z", S = "Z", A = "4", o = "0",
+		O = "0", l = "1", y = "j", H = "|-|", W = "|\\/|", D = "|D",
+		V = "\\/", x = "><"
+	}
 	irc:add_command("misc", "silly_text", function(irc, state, channel, msg)
 		local type, msg = msg:match("^(.-) (.+)$")
 		assert(type, "Insufficient arguments")
