@@ -6,22 +6,20 @@ local function stats(username)
 	local http = require("socket.http")
 	http.USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:30.0) Gecko/20100101 Firefox/30.0"
 
-	local response, response_code = http.request("http://forum.toribash.com/bank_ajax.php?bank_ajax=get_userinfo&username=" .. username)
+	local response, response_code = http.request("http://forum.toribash.com/toi_stats.php?format=json&username=" .. username)
 
 	assert(response_code == 200, "Error requesting page")
 
 	local data, pos, err = json.decode(response)
 	assert(not err, err)
 
-	local user = data.users[1]
-
-	return user
+	return data
 end
 
 return function(irc)
 	irc:add_command("toribash", "tb_stats", function(irc, state, channel, username)
 		local user = stats(username)
-		return ("%s's stats: %i qi, %i tc"):format(user.username, user.qi, user.balance)
+		return ("%s's stats: %i qi, %i tc"):format(user.username, user.qi, user.tc)
 	end, true)
 
 	irc:add_command("toribash", "tb_qi", function(irc, state, channel, username)
@@ -31,7 +29,7 @@ return function(irc)
 
 	irc:add_command("toribash", "tb_tc", function(irc, state, channel, username)
 		local user = stats(username)
-		return tostring(user.balance)
+		return tostring(user.tc)
 	end, true)
 
 	local irc_colors = {
