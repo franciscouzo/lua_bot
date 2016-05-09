@@ -475,7 +475,7 @@ return function(irc, state, channel, msg)
 
 	if tonumber(msg) then
 		local n = tonumber(msg)
-		assert(n >= 1 and n < 2^#controls, "numbet out of range")
+		assert(n >= 1 and n < 2^#controls, "number out of range")
 		for i, control in ipairs(controls) do
 			if bit32.band(n, 2^i) then
 				table.insert(structure_array, control)
