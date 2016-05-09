@@ -551,6 +551,29 @@ return function(irc)
 		return (response:match('<span class="ipa">(.-)</span>'))
 	end, true)
 
+	irc:add_command("misc", "duckduckgo", function(irc, state, channel, query)
+		local https = require("ssl.https")
+		local url = require("socket.url")
+
+		local response, response_code = https.request("https://api.duckduckgo.com/?format=json&t=github.com/franciscouzo/lua_bot&q=" .. url.escape(query))
+
+		local json = require("json")
+		local obj, pos, err = json.decode(response)
+		assert(not err, err)
+
+		if obj.AbstractURL ~= "" then
+			return obj.AbstractURL
+		elseif obj.Redirect ~= "" then
+			return obj.Redirect
+		elseif obj.Answer ~= ""  then
+			return obj.Answer
+		elseif obj.Image ~= "" then
+			return obj.Image
+		else
+			error("No result found")
+		end
+	end, true)
+
 	irc:add_hook("misc", "on_cmd_privmsg", function(irc, state, channel, msg)
 		if msg == irc.nick .. "!" then
 			irc:privmsg(channel, state.nick .. "!")
