@@ -5,11 +5,11 @@ local modules = {
 	'module_management', 'permissions', 'output_command', 'sed_replace',
 	--[['url_info',]] 'unknown_command',
 
-	'cleverbot', 'code', 'color', 'commands', 'communicate', 'ctcp', 'dcc',
-	'encode', 'factoids', 'fake_message', 'feeds', 'figlet', 'games',
-	'generators', 'google', 'hash', 'highlight', 'image', 'json', 'karma',
-	'lastfm', 'maze', 'misc', 'multiuser', 'qrcode', 'seen', 'shorten',
-	'shutup', 'tell', 'timer', 'translation_party', 'utils', 'vote', 'welcome'
+	'cleverbot', 'code', 'commands', 'ctcp', 'dcc', 'encode', 'factoids',
+	'fake_message', 'feeds', 'figlet', 'games', 'generators', 'google', 'hash',
+	'highlight', 'image', 'json', 'karma', 'lastfm', 'maze', 'misc',
+	'multiuser', 'qrcode', 'seen', 'shorten', 'shutup', 'style', 'tell',
+	'timer', --[['toribash',]] 'translation_party', 'utils', 'vote', 'welcome'
 }
 
 local dcc_folder = "dcc_files/"
@@ -59,8 +59,6 @@ return {
 	rejoin_on_reconnect = true,
 
 	modules = modules,
-	-- add ordered list when logging is done
-	-- because logging must be ran before ignore
 
 	flood_control = {
 		length = 5, -- 5 message every 12 seconds
@@ -91,7 +89,8 @@ return {
 		add_cmd = {true, "o"},
 		del_cmd = {true, "o"},
 		vote_start = "v",
-		vote_end   = "v"
+		vote_end   = "v",
+		["for"] = {true, "o"}
 	},
 	
 	--[[dcc = {
