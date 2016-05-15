@@ -33,3 +33,9 @@ You can install them by using luarocks:
 You might want to install these globally by running luarocks as root, otherwise you can run this command to make local installed packages available to Lua:
 
     echo "eval \`luarocks path\`" >> ~/.bashrc
+
+After you installed all the requirements, copy the file `example_config.lua` to `config.lua` and edit away
+
+After you're done editing `config.lua`, you can run the bot by running the following command:
+
+    lua5.1 main.lua config.lua
