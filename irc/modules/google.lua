@@ -25,11 +25,10 @@ return function(irc)
 		assert(not err, err)
 
 		local result = assert(obj.items[result_n], "No results")
-		local result_url = result.pagemap.metatags[1]['og:url']
 		local content = result.htmlSnippet:gsub("</?b>", "\002"):gsub("<br>", " "):gsub("%s+", " ")
 		content = html.unescape(content)
 
-		return ("%s - %s - %s"):format(result_url, result.title, content)
+		return ("%s - %s - %s"):format(result.link, result.title, content)
 	end, true)
 	irc:add_command("google", "youtube", function(irc, state, channel, msg)
 		local https = require("ssl.https")
