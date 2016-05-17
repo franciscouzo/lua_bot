@@ -28,20 +28,25 @@ return function(irc)
 		return ("%s - %s"):format(result_url, content)
 	end, true)
 	irc:add_command("google", "youtube", function(irc, state, channel, msg)
-		local search_url = "https://gdata.youtube.com/feeds/api/videos"
-		local http = require("socket.http")
-		local url  = require("socket.url")
+		local https = require("ssl.https")
+		local escape = require("socket.url").escape
 
-		local response, response_code = http.request(search_url .. "?q=" .. url.escape(msg) .. "&v=2&alt=jsonc")
+		local url = "https://www.googleapis.com/youtube/v3/search" ..
+		            "?part=snippet" ..
+		            "&maxResults=1" ..
+		            "&key=" .. irc.config.youtube_api_key ..
+		            "&q=" .. escape(msg)
+
+		local response, response_code = https.request(url)
 		assert(response_code == 200, "Error requesting page")
 
 		local json = require("json")
 		local obj, pos, err = json.decode(response)
 		assert(not err, err)
 
-		local item = obj.data.items[1]
-		local title = html.unescape(item.title)
-		return ("https://youtu.be/%s - [%i:%02i] %s"):format(item.id, item.duration / 60, item.duration % 60, title)
+		local item = obj.items[1]
+		local title = html.unescape(item.snippet.title)
+		return ("https://youtu.be/%s - %s"):format(item.id.videoId, title)
 	end, true)
 	irc:add_command("google", "youtube_random", function(irc, state, channel, msg)
 		local http = require("socket.http")
