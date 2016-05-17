@@ -2,30 +2,34 @@ local utils = require("irc.utils")
 local html = require("irc.html")
 
 return function(irc)
-	irc:add_command("google", "google", function(irc, state, channel, msg)
-		local result_n, msg = msg:match("^(%d*) ?(.+)")
+	irc:add_command("google", "google", function(irc, state, channel, query)
+		local result_n, query = query:match("^(%d*) ?(.+)")
 
 		result_n = tonumber(result_n) or 1
 		result_n = math.max(1, result_n)
 		result_n = math.min(8, result_n)
 
-		local search_url = "https://ajax.googleapis.com/ajax/services/search/web"
-		local http = require("socket.http")
-		local url  = require("socket.url")
+		local https = require("ssl.https")
+		local escape = require("socket.url").escape
 
-		local response, response_code = http.request(search_url .. "?q=" .. url.escape(msg) .. "&v=1.0")
+		local url = "https://www.googleapis.com/customsearch/v1" ..
+		            "?key=" .. irc.config.google_api_key ..
+		            "&cx=" .. irc.config.google_api_cx ..
+		            "&q=" .. escape(query)
+
+		local response, response_code = https.request(url)
 		assert(response_code == 200, "Error requesting page")
 
 		local json = require("json")
 		local obj, pos, err = json.decode(response)
 		assert(not err, err)
 
-		local first_result = assert(obj.responseData.results[result_n], "No results")
-		local result_url = first_result.unescapedUrl
-		local content = first_result.content:gsub("</?b>", "\002"):gsub("\n", " ")
+		local result = assert(obj.items[result_n], "No results")
+		local result_url = result.pagemap.metatags[1]['og:url']
+		local content = result.htmlSnippet:gsub("</?b>", "\002"):gsub("<br>", " "):gsub("%s+", " ")
 		content = html.unescape(content)
 
-		return ("%s - %s"):format(result_url, content)
+		return ("%s - %s - %s"):format(result_url, result.title, content)
 	end, true)
 	irc:add_command("google", "youtube", function(irc, state, channel, msg)
 		local https = require("ssl.https")
