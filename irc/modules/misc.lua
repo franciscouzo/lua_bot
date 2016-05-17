@@ -604,7 +604,7 @@ return function(irc)
 		end
 
 		return utils.strip(xml.find(data, "plaintext")[1])
-	end)
+	end, true)
 
 	irc:add_hook("misc", "on_cmd_privmsg", function(irc, state, channel, msg)
 		if msg == irc.nick .. "!" then
