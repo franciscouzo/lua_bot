@@ -5,7 +5,7 @@ local modules = {
 	'module_management', 'permissions', 'output_command', 'sed_replace',
 	--[['url_info',]] 'unknown_command',
 
-	'cleverbot', 'code', 'commands', 'ctcp', 'dcc', 'encode', 'factoids',
+	--[['cleverbot',]] 'code', 'commands', 'ctcp', 'dcc', 'encode', 'factoids',
 	'fake_message', 'feeds', 'figlet', 'games', 'generators', 'google', 'hash',
 	'highlight', 'image', 'json', 'karma', 'lastfm', 'maze', 'misc',
 	'multiuser', 'qrcode', 'seen', 'shorten', 'shutup', 'style', 'tell',
@@ -51,7 +51,7 @@ return {
 		["#channel"] = {
 			admin_channel = true,
 			autojoin = true,
-			--key = "key",
+			--key = ...,
 			--blacklist = {},
 			--whitelist = {}
 		}
@@ -111,6 +111,7 @@ return {
 		ignore_time = 60
 	},
 	shutup_time = 180,
-	--page2images_key = "api key",
-	--lastfm_api_key = "api key"
+	--page2images_key = ...,
+	--lastfm_api_key = ...,
+	--youtube_api_key = ...
 }

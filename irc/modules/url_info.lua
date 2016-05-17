@@ -13,27 +13,32 @@ end
 
 local function youtube_info(irc, state, channel, yt_id)
 	local success, title = pcall(function()
+		local url = "https://www.googleapis.com/youtube/v3/videos" ..
+		            "?part=snippet,contentDetails,statistics" ..
+		            "&maxResults=1" ..
+		            "&key=" .. irc.config.youtube_api_key ..
+		            "&id=" .. yt_id
+
 		local https = require("ssl.https")
-		local response, response_code = https.request("https://gdata.youtube.com/feeds/api/videos/" .. yt_id .. "?alt=jsonc&v=2")
+		local response, response_code = https.request(url)
 		assert(response_code == 200, "Error requesting page")
 		local data, pos, err = json.decode(response)
 		assert(not err, err)
 
-		data = data.data
-		local title = data.title
-		local uploader = data.uploader
-		local uploaded = data.uploaded:match("^%d+%-%d+%-%d+")
+		data = data.items[1]
+		local title = data.snippet.title
+		local channel_title = data.snippet.channelTitle
+		local published_at = data.snippet.publishedAt:match("^%d+%-%d+%-%d+")
 
-		local duration = irc:run_command(state, channel, "format_seconds " .. tonumber(data.duration))
-		duration = duration or (math.floor(data.duration) .. " second" .. (data.duration == 1 and "" or "s"))
+		local duration_min, duration_sec = data.contentDetails.duration:match("^PT(%d+)M(%d+)S")
 
-		local comments = tonumber(data.commentCount)
-		local views = tonumber(data.viewCount)
-		local likes = tonumber(data.likeCount)
-		local dislikes = tonumber(data.ratingCount) - tonumber(data.likeCount)
+		local comments = tonumber(data.statistics.commentCount)
+		local views = tonumber(data.statistics.viewCount)
+		local likes = tonumber(data.statistics.likeCount)
+		local dislikes = tonumber(data.statistics.dislikeCount)
 
-		return ("%s | %s | %s | %s | %i comment%s, %i view%s, %i like%s, %i dislike%s"):format(
-			title, uploader, uploaded, duration,
+		return ("%s | %s | %s | %s:%s | %i comment%s, %i view%s, %i like%s, %i dislike%s"):format(
+			title, channel_title, published_at, duration_min, duration_sec,
 			comments, comments == 1 and "" or "s",
 			views,    views    == 1 and "" or "s",
 			likes,    likes    == 1 and "" or "s",
