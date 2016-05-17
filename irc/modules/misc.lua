@@ -380,7 +380,8 @@ return function(irc)
 		local response, response_code = http.request("http://ipinfo.io/" .. ip .. "/json")
 		assert(response_code == 200, "Error requesting page")
 		local data, pos, err = json.decode(response)
-		return ip .. " is located in " .. data.city + ', ' + data.country + '. Hostname: ' + data.hostname + '. ISP: ' + data.org
+        assert(not err, err)
+		return ip .. " is located in " .. data.city .. ", " .. data.country + ". Hostname: " .. data.hostname .. ". ISP: " .. data.org
 	end, true)
 	irc:add_command("misc", "headers", function(irc, state, channel, url)
 		local http = require("socket.http")
