@@ -581,6 +581,30 @@ return function(irc)
 			error("No result found")
 		end
 	end, true)
+	irc:add_command("misc", "wolframalpha", function(irc, state, channel, query)
+		local https = require("ssl.https")
+		local escape = require("socket.url").escape
+		local xml = require("xml")
+
+		local url = "https://api.wolframalpha.com/v2/query" ..
+		            "?input=" .. escape(query) ..
+		            "&appid=" .. irc.config.wolframalpha_api_key
+
+		local response, response_code = https.request(url)
+		assert(response_code == 200, "Error requesting page")
+
+		local data = xml.load(response)
+
+		if not data.success then
+			local errors = {}
+			for tip in xml.find(data, "tips") do
+				table.insert(errors, tip.text)
+			end
+			error(table.concat(errors, ". "))
+		end
+
+		return utils.strip(xml.find(data, "plaintext")[1])
+	end)
 
 	irc:add_hook("misc", "on_cmd_privmsg", function(irc, state, channel, msg)
 		if msg == irc.nick .. "!" then

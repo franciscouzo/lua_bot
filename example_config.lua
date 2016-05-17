@@ -113,5 +113,6 @@ return {
 	shutup_time = 180,
 	--page2images_key = ...,
 	--lastfm_api_key = ...,
-	--youtube_api_key = ...
+	--youtube_api_key = ...,
+	--wolframalpha_api_key = ...
 }
