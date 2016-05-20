@@ -42,7 +42,7 @@ return {
 		admin_debug = true,
 		unknown_command = false
 	},
-	
+
 	timeout = 300,
 	on_connect = {
 		
@@ -67,7 +67,7 @@ return {
 	log = true,
 
 	--output_command = "rainbow",
-	
+
 	module_permissions = {
 		active            = "v",
 		ctcp              = {true, "v"}, -- {admin}
@@ -84,7 +84,7 @@ return {
 		utils             = {true, "o"},
 		welcome           = {true, "o"} -- it can use arbitrary commands on join
 	},
-	
+
 	command_permissions = {
 		add_cmd = {true, "o"},
 		del_cmd = {true, "o"},
@@ -92,7 +92,7 @@ return {
 		vote_end   = "v",
 		["for"] = {true, "o"}
 	},
-	
+
 	--[[dcc = {
 		ip = "your ip",
 		folder = dcc_folder,
