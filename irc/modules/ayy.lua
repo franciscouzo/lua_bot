@@ -28,7 +28,7 @@ return function(irc)
 		local socket = require("socket")
 
 		while irc.linda:get("ayy." .. channel) do
-			socket.sleep(math.random(2, 4)) -- 10-45 minutes
+			socket.sleep(math.random(10 * 60, 45 * 60)) -- 10-45 minutes
 			if not irc.linda:get("ayy.active." .. channel) then
 				irc.linda:set("ayy.active." .. channel, true)
 				irc:privmsg(channel, "ayy")
