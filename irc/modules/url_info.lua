@@ -37,7 +37,7 @@ local function youtube_info(irc, state, channel, yt_id)
 		local likes = tonumber(data.statistics.likeCount)
 		local dislikes = tonumber(data.statistics.dislikeCount)
 
-		return ("%s | %s | %s | %s:%s | %i comment%s, %i view%s, %i like%s, %i dislike%s"):format(
+		return ("%s | %s | %s | %i:%.2i | %i comment%s, %i view%s, %i like%s, %i dislike%s"):format(
 			title, channel_title, published_at, duration_min, duration_sec,
 			comments, comments == 1 and "" or "s",
 			views,    views    == 1 and "" or "s",
