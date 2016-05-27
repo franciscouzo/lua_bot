@@ -606,6 +606,23 @@ return function(irc)
 
 		return utils.strip(xml.find(data, "plaintext")[1])
 	end, true)
+	irc:add_command("misc", "gif", function(irc, state, channel, query)
+		local http = require("socket.http")
+		local escape = require("socket.url").escape
+
+		local url = "http://api.giphy.com/v1/gifs/search" ..
+		            "?limit=1" ..
+		            "&q=" .. escape(query) ..
+		            "&api_key=" .. irc.config.giphy_api_key
+
+		local response, response_code = http.request(url)
+
+		local json = require("json")
+		local obj, pos, err = json.decode(response)
+		assert(not err, err)
+
+		return obj.data[1].url
+	end, true)
 
 	irc:add_hook("misc", "on_cmd_privmsg", function(irc, state, channel, msg)
 		if msg == irc.nick .. "!" then
