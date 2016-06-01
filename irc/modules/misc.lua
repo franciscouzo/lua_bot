@@ -429,7 +429,10 @@ return function(irc)
 		local out = obj.list[1].definition:gsub("%s+", " ")
 		if #out > 300 then
 			uri = "http://www.urbandictionary.com/define.php?term=" .. url.escape(msg)
-			uri = irc:run_command(state, channel, "shorten " .. uri) or uri
+			success, shortened_uri = pcall(irc.run_command, irc, state, channel, "shorten " .. uri)
+			if success then
+				uri = shortened_uri
+			end
 			out = out:sub(1, 296 - #uri) .. "... " .. uri
 		end
 		return out
