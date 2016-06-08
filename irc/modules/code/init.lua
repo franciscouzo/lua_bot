@@ -56,7 +56,7 @@ return function(irc)
 		return tostring(math.atan2(y, x))
 	end, false, "float", "float")
 	irc:add_command("code", "ldexp", function(irc, state, channel, y, x)
-		return tostring(math.atan2(y, x))
+		return tostring(math.ldexp(y, x))
 	end, false, "float", "float")
 
 	irc:add_command("code", "random", function(irc, state, channel, n1, n2)
