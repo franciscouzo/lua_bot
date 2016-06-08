@@ -161,6 +161,10 @@ return function(irc)
 			return ""
 		end
 	end, true)
+	irc:add_command("code", "try_print", function(irc, state, channel, msg)
+		local _, ret = pcall(irc.run_command, irc, state, channel, msg)
+		return ret
+	end, true)
 	irc:add_command("code", "try_except", function(irc, state, channel, msg)
 		local try, except = msg:match("(.+) except (.+)")
 		local success, ret = pcall(irc.run_command, irc, state, channel, try)
