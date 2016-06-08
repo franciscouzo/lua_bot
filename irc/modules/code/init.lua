@@ -15,7 +15,7 @@ local operator_funcs = {
 }
 
 local math_func_arguments = {
-	"abs","ceil", "floor", "acos", "asin", "atan", "cos", "sin", "tan",
+	"abs", "ceil", "floor", "acos", "asin", "atan", "cos", "sin", "tan",
 	"cosh", "sinh", "tanh", "deg", "rad", "exp", "log", "log10", "min", "max", "sqrt"
 }
 
