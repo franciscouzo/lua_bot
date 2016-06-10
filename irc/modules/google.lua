@@ -37,6 +37,7 @@ return function(irc)
 		local url = "https://www.googleapis.com/youtube/v3/search" ..
 		            "?part=snippet" ..
 		            "&maxResults=1" ..
+		            "&type=video" ..
 		            "&key=" .. irc.config.youtube_api_key ..
 		            "&q=" .. escape(msg)
 
