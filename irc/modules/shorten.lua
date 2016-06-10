@@ -2,31 +2,35 @@ local utils = require("irc.utils")
 local json = require("json")
 
 return function(irc)
-	irc:add_command("shorten", "shorten", function(irc, state, channel, msg)
-		assert(utils.strip(msg) ~= "", "Invalid url")
+	irc:add_command("shorten", "shorten", function(irc, state, channel, url)
+		assert(utils.strip(url) ~= "", "Invalid url")
 
-		local http = require("socket.http")
-		local url = require("socket.url")
+		local https = require("ssl.https")
+		local ltn12 = require("ltn12")
 
-		local data = {
-			format   = 'json',
-			url      = msg,
-			logstats = log_stat and "1" or "0",
-			shorturl = custom_url
-		}
+		local http_data = json.encode({longUrl=url})
+		local url = "https://www.googleapis.com/urlshortener/v1/url" ..
+		            "?key=" .. irc.config.google_api_key
 
-		local http_data = {}
-		for k, v in pairs(data) do
-			table.insert(http_data, url.escape(k) .. "=" .. url.escape(v))
-		end
-		http_data = table.concat(http_data, "&")
+		local response = {}
+		local _, response_code = https.request({
+			url = url,
+			method = "POST",
+			headers = {
+				["Content-Length"] = http_data:len(),
+				["Content-Type"] = "application/json"
+			},
+			source = ltn12.source.string(http_data),
+			sink = ltn12.sink.table(response)
+		})
 
-		local response, response_code = http.request("http://is.gd/create.php", http_data)
-		local response, pos, err = json.decode(response)
+		assert(response_code == 200, "Error requesting page")
 
+		response = table.concat(response)
+
+		local data, pos, err = json.decode(response)
 		assert(not err, err)
-		assert(response.shorturl, response.errormessage or "Error requesting page")
 
-		return response.shorturl
+		return data.id
 	end, true)
 end
