@@ -57,27 +57,31 @@ return function(irc)
 		assert(response_code == 200, "Error requesting page")
 		return "https://youtu.be/" .. youtube_id
 	end, true)
-	irc:add_command("google", "search_image", function(irc, state, channel, msg)
-		local result_n, msg = msg:match("^(%d*) ?(.+)")
+	irc:add_command("google", "search_image", function(irc, state, channel, query)
+		local result_n, query = query:match("^(%d*) ?(.+)")
 
 		result_n = tonumber(result_n) or 1
 		result_n = math.max(1, result_n)
 		result_n = math.min(8, result_n)
 
-		local search_url = "https://ajax.googleapis.com/ajax/services/search/images"
+		local https = require("ssl.https")
+		local escape = require("socket.url").escape
 
-		local http = require("socket.http")
-		local url  = require("socket.url")
+		local url = "https://www.googleapis.com/customsearch/v1" ..
+		            "?key=" .. irc.config.google_api_key ..
+		            "&cx=" .. irc.config.google_api_cx ..
+		            "&searchType=image" ..
+		            "&q=" .. escape(query)
 
-		local response, response_code = http.request(search_url .. "?v=1.0&start=0&q=" .. url.escape(msg))
+		local response, response_code = https.request(url)
 		assert(response_code == 200, "Error requesting page")
 
 		local json = require("json")
 		local obj, pos, err = json.decode(response)
 		assert(not err, err)
 
-		local item = assert(obj.responseData.results[result_n], "No results")
-		return item.url
+		local result = assert(obj.items[result_n], "No results")
+		return result.link
 	end, true)
 	irc:add_command("google", "calc", function(irc, state, channel, msg)
 		assert(utils.strip(msg) ~= "", "Empty request")
