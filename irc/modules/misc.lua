@@ -458,6 +458,18 @@ return function(irc)
 		irc.linda:set("generators.fml.cache", fml_cache)
 		return text
 	end, true)
+	irc:add_command("misc", "wyr", function(irc, state, channel, msg)
+		local http = require("socket.http")
+		local response, response_code = http.request("http://www.rrrather.com/botapi")
+		assert(response_code == 200, "Error requesting page")
+
+		local data, pos, err = json.decode(response)
+		assert(not err, err)
+
+		local title = utils.strip(data.title):gsub("%.+$", "")
+
+		return ("%s... %s OR %s - %s"):format(title, data.choicea, data.choiceb, data.link)
+	end, true)
 	irc:add_command("misc", "lolcat", function(irc, state, channel, msg)
 		msg = utils.strip(msg)
 		assert(msg ~= "", "Empty string")
