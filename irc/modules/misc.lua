@@ -437,7 +437,7 @@ return function(irc)
 		end
 		return out
 	end, true)
-	irc:add_command("generators", "fml", function(irc, state, channel, msg)
+	irc:add_command("misc", "fml", function(irc, state, channel, msg)
 		local fml_cache = irc.linda:get("generators.fml.cache") or {}
 		if #fml_cache == 0 then
 			local http = require("socket.http")
