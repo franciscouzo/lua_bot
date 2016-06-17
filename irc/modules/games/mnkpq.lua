@@ -40,8 +40,8 @@ local function check_win(game, player)
 					return true
 				end
 
-				diagonal1 = diagonal1 + ((game.board[y + i]:sub(y + i, y + i):match(player)) and 1 or 0)
-				diagonal2 = diagonal2 + ((game.board[y + i]:sub(game.k - (x + i) + 1, game.k - (x + i) + 1):match(player)) and 1 or 0)
+				diagonal1 = diagonal1 + (game.board[y + game.k - i + 1]:sub(x + i, x + i):match(player) and 1 or 0)
+				diagonal2 = diagonal2 + (game.board[y + game.k - i + 1]:sub(x + game.k - i + 1, x + game.k - i + 1):match(player) and 1 or 0)
 			end
 			if diagonal1 == game.k or diagonal2 == game.k then
 				return true
