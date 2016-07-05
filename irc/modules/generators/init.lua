@@ -15,5 +15,5 @@ return function(irc)
 	irc:add_command("generators", "bullshit",               require("irc.modules.generators.bullshit"),               false, "+int...")
 
 	irc:add_command("generators", "commit",                 require("irc.modules.generators.commit"),                 true)
-	irc:add_command("generators", "hipteripsum",            require("irc.modules.generators.hipsteripsum"),           true)
+	irc:add_command("generators", "hipsteripsum",           require("irc.modules.generators.hipsteripsum"),           true)
 end
