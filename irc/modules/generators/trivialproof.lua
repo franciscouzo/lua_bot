@@ -98,7 +98,7 @@ for _, noun in ipairs(set_nouns) do
 	table.insert(all_nouns, noun)
 end
 
-function plural(noun_with_override)
+local function plural(noun_with_override)
 	if noun_with_override[2] then
 		return nounWithOverride[2]
 	else
